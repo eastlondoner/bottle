@@ -1,6 +1,7 @@
+#!/bin/sh
 
-git clone https://github.com/eastlondoner/bottle.git
-cd bottle
+#git clone https://github.com/eastlondoner/bottle.git
+#cd bottle
 
 sudo su hdfs
 hadoop fs -mkdir /bottle
