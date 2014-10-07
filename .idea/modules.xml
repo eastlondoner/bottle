@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bottle.iml" filepath="$PROJECT_DIR$/bottle.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../repos.iml" filepath="$PROJECT_DIR$/../repos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wordcount/wordcount.iml" filepath="$PROJECT_DIR$/wordcount/wordcount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wordtranslate/wordtranslate.iml" filepath="$PROJECT_DIR$/wordtranslate/wordtranslate.iml" />
     </modules>
   </component>
 </project>
