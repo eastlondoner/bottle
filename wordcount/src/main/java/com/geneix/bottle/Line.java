@@ -11,12 +11,18 @@ import java.io.IOException;
 /**
  * Created by andrew on 06/10/14.
  */
-public class Word implements WritableComparable<Word>{
+public class Line implements WritableComparable<Line>{
 
     private WordType wordType;
     private Text txt;
 
-    public Word(Text word, WordType type){
+    //Empty constructor required for Hadoop?
+    public Line(){
+        wordType = null;
+        txt = new Text();
+    }
+
+    public Line(Text word, WordType type){
         wordType = type;
         txt = word;
     }
@@ -27,9 +33,9 @@ public class Word implements WritableComparable<Word>{
     }
 
     @Override
-    public int compareTo(Word word) {
+    public int compareTo(Line line) {
         int thisLength = this.txt.getLength();
-        int thatLength = word.txt.getLength();
+        int thatLength = line.txt.getLength();
         return thatLength < thisLength ? -1 : thatLength > thisLength ? 1 : 0;
     }
 
