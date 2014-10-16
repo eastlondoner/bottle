@@ -3,7 +3,9 @@ var _ = require("underscore"),
     querystring = require("querystring"),
     fs = require("fs"),
     XmlStream = require("xml-stream"),
-    events = require('events');
+    events = require('events'),
+    pkgcloud = require('pkgcloud'),
+    ss = require('stream-stream');
 
 var PUBMED_DB_NAME = "pubmed";
 var ID_FILE_NAME = "ids.txt";
@@ -18,7 +20,7 @@ var entrezBaseURL = {
 
 
 var idsFile = fs.createWriteStream(ID_FILE_NAME);
-var outFile = fs.createWriteStream(OUT_FILE_NAME);
+var outStream = new ss();
 
 
 /* Basic Search
@@ -184,18 +186,18 @@ function fetch(database, file, cb) {
                 cb(null, res);
                 //On data for now
                 /*
-                res.on('data', function (data) {
-                    //console.log(data);
-                    if (!cb(null, data)) {
-                        res.pause();
-                        console.warn("pausing read while output drains");
-                        outFile.once('drain', function () {
-                            console.log("RESUMING READ STREAM");
-                            res.resume();
-                        });
-                    }
-                });
-                */
+                 res.on('data', function (data) {
+                 //console.log(data);
+                 if (!cb(null, data)) {
+                 res.pause();
+                 console.warn("pausing read while output drains");
+                 outStream.once('drain', function () {
+                 console.log("RESUMING READ STREAM");
+                 res.resume();
+                 });
+                 }
+                 });
+                 */
 
                 res.once('end', _.partial(onResponseEnd, eventEmitter));
             } catch (e) {
@@ -203,6 +205,7 @@ function fetch(database, file, cb) {
                 return cb ? cb(e) : null;
             }
         }
+
         var batch = [];
 
         function makeRequest() {
@@ -276,9 +279,9 @@ function fetch(database, file, cb) {
         makeRequest();
 
         eventEmitter.on('end', function () {
-            var timeTaken = process.hrtime()[0]-fetchStartTime;
-            console.log("%d BYTES WRITTEN IN %d SECONDS", outFile.bytesWritten, timeTaken);
-            console.log("%d MB/s",(outFile.bytesWritten/1000000)/timeTaken);
+            var timeTaken = process.hrtime()[0] - fetchStartTime;
+            console.log("%d BYTES WRITTEN IN %d SECONDS", uploadSocket.bytesWritten, timeTaken);
+            console.log("%d MB/s", (uploadSocket.bytesWritten / 1000000) / timeTaken);
             if (moreWork()) {
                 console.log("PROCESSING: " + count);
                 //params.retstart = params.retstart + params.retmax;
@@ -305,23 +308,59 @@ function fetchCallback(err, response) {
         }
 
         if (response === null) {
-            //outFile.write("</ResultList>");
-            return outFile.end();
+            //outStream.write("</ResultList>");
+            return outStream.end();
         }
 
-        response.pipe(outFile, {end:false});
-        //return outFile.write(["<Result>",data,"</Result>\n"].join(''));
+        outStream.write(response);
+        //return outStream.write(["<Result>",data,"</Result>\n"].join(''));
     } catch (e) {
         console.error(e);
     }
 }
 
+var uploadSocket;
+
+function getCloudFile(options, cb) {
+
+    var eventEmitter = new events.EventEmitter();
+    var config = JSON.parse(fs.readFileSync("../.config/rackspace.json"));
+    var rackspace = pkgcloud.storage.createClient(_.extend(config, {
+        provider: 'rackspace',
+        region: 'LON'
+    }));
+    rackspace.createContainer('pubmed-data', function (err, container) {
+        if (err) {
+            console.error(err);
+            return cb(err);
+        }
+        console.log("CONTAINER CREATE COMPLETE");
+        console.log(container);
+
+        uploadSocket = rackspace.upload({
+                container: container, // this can be either the name or an instance of container
+                remote: 'pharmacogeneticsData', // name of the new file,
+                stream: outStream
+            },
+            function (err, result) {
+                if (err) {
+                    console.error(err);
+                    return cb(err);
+                }
+                console.log("UPLOAD COMPLETE");
+                console.log(result);
+            });
+        cb(null, uploadSocket);
+    });
+
+    return eventEmitter;
+}
 
 idsFile.on("open", function () {
     console.log("FILE OPENED");
     idsFile.write("<IdList>\n");
     //search(PUBMED_DB_NAME,'("2000/1/1"[Date - Publication] : "2001/1/1"[Date - Publication])', function(err, data){
-    search(PUBMED_DB_NAME, '(mouse[title])', function (err, data) {
+    search(PUBMED_DB_NAME, '(pharmacogenetics[title])', function (err, data) {
         try {
             if (err) {
                 console.log("Something went wrong");
@@ -345,9 +384,14 @@ idsFile.on("error", function (e) {
 
 idsFile.on("finish", function () {
     console.log("FILE CLOSED");
-    //outFile.write("<ResultList>");
-    fetch(PUBMED_DB_NAME, ID_FILE_NAME, fetchCallback);
-
+    //outStream.write("<ResultList>");
+    getCloudFile({},function(err, writableStream){
+        if (err) {
+            console.error(err);
+            throw err;
+        }
+        fetch(PUBMED_DB_NAME, ID_FILE_NAME, fetchCallback);
+    })
 });
 
 

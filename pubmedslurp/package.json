@@ -4,6 +4,8 @@
     "private": true,
     "dependencies": {
         "underscore": "*",
-        "xml-stream": "*"
+        "xml-stream": "*",
+        "pkgcloud" : "*",
+        "stream-stream" : "*"
     }
 }
