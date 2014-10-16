@@ -1,7 +1,9 @@
 .idea/libraries
 .idea/workspace.xml
+node_modules/
 
 .gradle
+.config
 
 out/
 
