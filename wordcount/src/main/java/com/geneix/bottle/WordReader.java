@@ -196,7 +196,7 @@ public class WordReader implements Closeable {
                 LOG.info(String.format("Bytes consumed: %s",bytesConsumed));
             }
 
-            int appendLength = bufferPosn - wordStart;
+            int appendLength = bufferPosn-1 - wordStart;  //The last char read is the one before the buffer position
             if (appendLength > maxWordLength - txtLength) {
                 appendLength = maxWordLength - txtLength;
             }
