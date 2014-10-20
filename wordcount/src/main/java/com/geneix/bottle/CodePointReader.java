@@ -63,12 +63,12 @@ public class CodePointReader implements Closeable {
             }
             result = decoder.decode(ByteBuffer.wrap(lookAheadByteBuffer), lookAheadCharOut, false);
             n++;
-        } while (result.isUnderflow() && n < 6);
+        } while (lookAheadCharOut.remaining() > 0 && n < 6);
         if (n > 6) {
             throw new IOException("Cannot have more than 6 bytes in a UFT8 character");
         }
 
-        if (result.isUnderflow() || result.isMalformed() || result.isOverflow() || result.isError()) {
+        if (result.isMalformed() || result.isOverflow() || result.isError()) {
             result.throwException();
         }
         lookAhead = lookAheadCharOut.get(0);
