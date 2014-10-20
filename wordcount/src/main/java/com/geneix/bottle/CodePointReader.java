@@ -69,7 +69,7 @@ public class CodePointReader implements Closeable {
         }
 
         if (result.isUnderflow() || result.isMalformed() || result.isOverflow() || result.isError()) {
-            throw new IOException("Error decoding UTF8");
+            result.throwException();
         }
         lookAhead = lookAheadCharOut.get(0);
         lookAheadCharOut.reset();
