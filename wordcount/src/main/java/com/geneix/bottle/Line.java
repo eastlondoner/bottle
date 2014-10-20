@@ -13,23 +13,26 @@ import java.io.IOException;
  */
 public class Line implements WritableComparable<Line>{
 
-    private WordType wordType;
+    private int wordCount;
     private Text txt;
 
     //Empty constructor required for Hadoop?
     public Line(){
-        wordType = null;
         txt = new Text();
     }
 
-    public Line(Text word, WordType type){
-        wordType = type;
-        txt = word;
+    public Line(Text line){
+        txt = line;
     }
+
+    public int getLength(){
+        return txt.getLength();
+    }
+
 
     @Override
     public int hashCode(){
-        return 4294967 * wordType.ordinal() + txt.hashCode(); //That's a prime which is approx (2^32) / 10
+        return 4294967 * wordCount + txt.hashCode(); //That's a prime which is approx (2^32) / 10
     }
 
     @Override
@@ -42,21 +45,13 @@ public class Line implements WritableComparable<Line>{
     @Override
     public void write(DataOutput out) throws IOException {
         txt.write(out);
-        WritableUtils.writeEnum(out,wordType);
+        WritableUtils.writeVInt(out,wordCount);
     }
 
     @Override
     public void readFields(DataInput in) throws IOException {
         txt.readFields(in);
-        wordType = WritableUtils.readEnum(in,WordType.class);
+        wordCount = WritableUtils.readVInt(in);
     }
 
-    public static enum WordType {
-        UNKNOWN,
-        NOUN,
-        VERB,
-        ADJECTIVE,
-        ADVERB,
-        OTHER; //Other is for words like and, so, if etc.
-    }
 }

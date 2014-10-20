@@ -1,204 +1,217 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.geneix.bottle;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.classification.InterfaceAudience;
+import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.Seekable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CodecPool;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.Decompressor;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import org.apache.hadoop.util.LineReader;
+import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
 import java.io.IOException;
 
 /**
- * Created by andrew on 06/10/14.
+ * Treats keys as offset in file and value as line.
  */
-public class WordRecordReader extends RecordReader<LongWritable, Text> {
+@InterfaceAudience.LimitedPrivate({"MapReduce", "Pig"})
+@InterfaceStability.Evolving
+public class WordRecordReader extends RecordReader<LongWritable, Word> {
+    public static final String MAX_WORD_LENGTH =
+            "mapreduce.input.wordrecordreader.word.maxlength";
+    private static final Log LOG = LogFactory.getLog(LineRecordReader.class);
+    private final WordParser wordParser = new FakeWordParser();
+    private long start;
+    private long pos;
+    private long end;
+    private WordReader in;
+    private FSDataInputStream fileIn;
+    private Seekable filePosition;
+    private int maxWordLength;
+    private LongWritable key;
+    private Text value;
+    private Decompressor decompressor;
+    private boolean isCompressedInput = false;
 
-        private long start;
-        private long pos;
-        private long end;
-        //private LineReader in;
-        private int maxWordLength;
-        private LongWritable key = new LongWritable();
-        private Text value = new Text();
+    public WordRecordReader() {
+    }
 
-        //private static final Log LOG = LogFactory.getLog(CustomLineRecordReader.class);
+    public void initialize(InputSplit genericSplit,
+                           TaskAttemptContext context) throws IOException {
+        FileSplit split = (FileSplit) genericSplit;
+        Configuration job = context.getConfiguration();
+        this.maxWordLength = job.getInt(MAX_WORD_LENGTH, Integer.MAX_VALUE);
+        start = split.getStart();
+        end = start + split.getLength();
+        final Path file = split.getPath();
 
-        /**
-         * From Design Pattern, O'Reilly...
-         * This method takes as arguments the map task’s assigned InputSplit and
-         * TaskAttemptContext, and prepares the record reader. For file-based input
-         * formats, this is a good place to seek to the byte position in the file to
-         * begin reading.
-         */
-        @Override
-        public void initialize(
-                InputSplit genericSplit,
-                TaskAttemptContext context)
-        throws IOException {
+        // open the file and seek to the start of the split
+        final FileSystem fs = file.getFileSystem(job);
+        fileIn = fs.open(file);
 
-            // This InputSplit is a FileInputSplit
-            FileSplit split = (FileSplit) genericSplit;
-
-            // Retrieve configuration, and Max allowed
-            // bytes for a single record
-            Configuration job = context.getConfiguration();
-            this.maxWordLength = job.getInt(
-                    "bottle.wordrecordreader.maxwordlength",
-                    Integer.MAX_VALUE);
-
-            // Split "S" is responsible for all records
-            // starting from "start" and "end" positions
-            start = split.getStart();
-            end = start + split.getLength();
-
-            // Retrieve file containing Split "S"
-            final Path file = split.getPath();
-            FileSystem fs = file.getFileSystem(job);
-            FSDataInputStream fileIn = fs.open(split.getPath());
-
-            // If Split "S" starts at byte 0, first line will be processed
-            // If Split "S" does not start at byte 0, first line has been already
-            // processed by "S-1" and therefore needs to be silently ignored
-            boolean skipFirstLine = false;
-            if (start != 0) {
-                skipFirstLine = true;
-                // Set the file pointer at "start - 1" position.
-                // This is to make sure we won't miss any line
-                // It could happen if "start" is located on a EOL
-                --start;
-                fileIn.seek(start);
-            }
-
-            in = new LineReader(fileIn, job);
-
-            // If first line needs to be skipped, read first line
-            // and stores its content to a dummy Text
-            if (skipFirstLine) {
-                Text dummy = new Text();
-                // Reset "start" to "start + line offset"
-                start += in.readLine(dummy, 0,
-                        (int) Math.min(
-                                (long) Integer.MAX_VALUE,
-                                end - start));
-            }
-
-            // Position is the actual start
-            this.pos = start;
-
+        CompressionCodec codec = new CompressionCodecFactory(job).getCodec(file);
+        if (null != codec) {
+            throw new IOException("Cannot handle compressed files right now");
+        } else {
+            fileIn.seek(start);
+            in = new WordReader(fileIn, job);
+            filePosition = fileIn;
         }
+        // If this is not the first split, we always throw away first record
+        // because we always (except the last split) read one extra line in
+        // next() method.
+        if (start != 0) {
+            start += in.readWord(new Text(), 0, maxBytesToConsume(start));
+        }
+        this.pos = start;
+    }
 
-        /**
-         * From Design Pattern, O'Reilly...
-         * Like the corresponding method of the InputFormat class, this reads a
-         * single key/ value pair and returns true until the data is consumed.
-         */
-        @Override
-        public boolean nextKeyValue() throws IOException {
 
-            // Current offset is the key
-            key.set(pos);
+    private int maxBytesToConsume(long pos) {
+        return isCompressedInput
+                ? Integer.MAX_VALUE
+                : (int) Math.max(Math.min(Integer.MAX_VALUE, end - pos), maxWordLength);
+    }
 
-            int newSize = 0;
+    private long getFilePosition() throws IOException {
+        long retVal;
+        if (isCompressedInput && null != filePosition) {
+            retVal = filePosition.getPos();
+        } else {
+            retVal = pos;
+        }
+        return retVal;
+    }
 
-            // Make sure we get at least one record that starts in this Split
-            while (pos < end) {
+    private int skipUtfByteOrderMark() throws IOException {
+        // Strip BOM(Byte Order Mark)
+        // Text only support UTF-8, we only need to check UTF-8 BOM
+        // (0xEF,0xBB,0xBF) at the start of the text stream.
+        int newMaxLineLength = (int) Math.min(3L + (long) maxWordLength,
+                Integer.MAX_VALUE);
+        int newSize = in.readWord(value, newMaxLineLength, maxBytesToConsume(pos));
+        // Even we read 3 extra bytes for the first line,
+        // we won't alter existing behavior (no backwards incompat issue).
+        // Because the newSize is less than maxLineLength and
+        // the number of bytes copied to Text is always no more than newSize.
+        // If the return size from readLine is not less than maxLineLength,
+        // we will discard the current line and read the next line.
+        pos += newSize;
+        int textLength = value.getLength();
+        byte[] textBytes = value.getBytes();
+        if ((textLength >= 3) && (textBytes[0] == (byte) 0xEF) &&
+                (textBytes[1] == (byte) 0xBB) && (textBytes[2] == (byte) 0xBF)) {
+            // find UTF-8 BOM, strip it.
+            LOG.info("Found UTF-8 BOM and skipped it");
+            textLength -= 3;
+            newSize -= 3;
+            if (textLength > 0) {
+                // It may work to use the same buffer and not do the copyBytes
+                textBytes = value.copyBytes();
+                value.set(textBytes, 3, textLength);
+            } else {
+                value.clear();
+            }
+        }
+        return newSize;
+    }
 
-                // Read first line and store its content to "value"
-                newSize = in.readLine(value, maxLineLength,
-                        Math.max((int) Math.min(
-                                Integer.MAX_VALUE, end - pos),
-                                maxLineLength));
-
-                // No byte read, seems that we reached end of Split
-                // Break and return false (no key / value)
-                if (newSize == 0) {
-                    break;
-                }
-
-                // Line is read, new position is set
+    public boolean nextKeyValue() throws IOException {
+        if (key == null) {
+            key = new LongWritable();
+        }
+        key.set(pos);
+        if (value == null) {
+            value = new Text();
+        }
+        int newSize = 0;
+        // We always read one extra line, which lies outside the upper
+        // split limit i.e. (end - 1)
+        while (getFilePosition() <= end) { //|| in.needAdditionalRecordAfterSplit()) {
+            if (pos == 0) {
+                newSize = skipUtfByteOrderMark();
+            } else {
+                newSize = in.readWord(value, maxWordLength, maxBytesToConsume(pos));
                 pos += newSize;
-
-                // Line is lower than Maximum record line size
-                // break and return true (found key / value)
-                if (newSize < maxLineLength) {
-                    break;
-                }
-
-                // Line is too long
-                // Try again with position = position + line offset,
-                // i.e. ignore line and go to next one
-                // TODO: Shouldn't it be LOG.error instead ??
-                LOG.info("Skipped line of size " +
-                        newSize + " at pos "
-                        + (pos - newSize));
             }
 
-
-            if (newSize == 0) {
-                // We've reached end of Split
-                key = null;
-                value = null;
-                return false;
-            } else {
-                // Tell Hadoop a new line has been found
-                // key / value will be retrieved by
-                // getCurrentKey getCurrentValue methods
-                return true;
+            if ((newSize == 0) || (newSize < maxWordLength)) {
+                break;
             }
-        }
 
-        /**
-         * From Design Pattern, O'Reilly...
-         * This methods are used by the framework to give generated key/value pairs
-         * to an implementation of Mapper. Be sure to reuse the objects returned by
-         * these methods if at all possible!
-         */
-        @Override
-        public LongWritable getCurrentKey() throws IOException,
-                InterruptedException {
-            return key;
+            // line too long. try again
+            LOG.info("Skipped line of size " + newSize + " at pos " +
+                    (pos - newSize));
         }
-
-        /**
-         * From Design Pattern, O'Reilly...
-         * This methods are used by the framework to give generated key/value pairs
-         * to an implementation of Mapper. Be sure to reuse the objects returned by
-         * these methods if at all possible!
-         */
-        @Override
-        public Text getCurrentValue() throws IOException, InterruptedException {
-            return value;
+        if (newSize == 0) {
+            key = null;
+            value = null;
+            return false;
+        } else {
+            return true;
         }
+    }
 
-        /**
-         * From Design Pattern, O'Reilly...
-         * Like the corresponding method of the InputFormat class, this is an
-         * optional method used by the framework for metrics gathering.
-         */
-        @Override
-        public float getProgress() throws IOException, InterruptedException {
-            if (start == end) {
-                return 0.0f;
-            } else {
-                return Math.min(1.0f, (pos - start) / (float) (end - start));
-            }
+    @Override
+    public LongWritable getCurrentKey() {
+        return key;
+    }
+
+    @Override
+    public Word getCurrentValue() {
+        return Word.fromText(value, wordParser);
+    }
+
+    /**
+     * Get the progress within the split
+     */
+    public float getProgress() throws IOException {
+        if (start == end) {
+            return 0.0f;
+        } else {
+            return Math.min(1.0f, (getFilePosition() - start) / (float) (end - start));
         }
+    }
 
-        /**
-         * From Design Pattern, O'Reilly...
-         * This method is used by the framework for cleanup after there are no more
-         * key/value pairs to process.
-         */
-        @Override
-        public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        try {
             if (in != null) {
                 in.close();
             }
+        } finally {
+            if (decompressor != null) {
+                CodecPool.returnDecompressor(decompressor);
+            }
         }
+    }
 }
