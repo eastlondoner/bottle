@@ -190,11 +190,7 @@ public class WordReader implements Closeable {
                     break;
                 }
             }
-            if(!terminatingSpaceReached){ // this means we read all characters till end of the
-                bytesConsumed = in.getBytePosition((int)bufferLength -1) - startBytes;
-            } else {
-                bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
-            }
+            bytesConsumed = in.getBytePosition(bufferPosn -1)-startBytes; //The last char read is the one before the buffer position
 
             if(LOG.isInfoEnabled()){
                 LOG.info(String.format("Bytes consumed: %s",bytesConsumed));
@@ -219,7 +215,7 @@ public class WordReader implements Closeable {
         if(LOG.isInfoEnabled()){
             LOG.info(String.format("Word found: %s",str.toString()));
         }
-        bufferBytePosn = in.getBytePosition(bufferPosn);
+        bufferBytePosn = in.getBytePosition(bufferPosn - 1);
         return (int) bytesConsumed;
     }
 
