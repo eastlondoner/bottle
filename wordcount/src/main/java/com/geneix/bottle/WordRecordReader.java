@@ -49,7 +49,7 @@ import java.io.IOException;
 public class WordRecordReader extends RecordReader<LongWritable, Word> {
     public static final String MAX_WORD_LENGTH =
             "mapreduce.input.wordrecordreader.word.maxlength";
-    private static final Log LOG = LogFactory.getLog(LineRecordReader.class);
+    private static final Log LOG = LogFactory.getLog(WordRecordReader.class);
     private final WordParser wordParser = new FakeWordParser();
     private long start;
     private long pos;
@@ -116,6 +116,7 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
         return retVal;
     }
 
+    //TODO: I'm not sure this works exactly correctly with the code point reader
     private int skipUtfByteOrderMark() throws IOException {
         // Strip BOM(Byte Order Mark)
         // Text only support UTF-8, we only need to check UTF-8 BOM
@@ -150,6 +151,10 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
     }
 
     public boolean nextKeyValue() throws IOException {
+        if(LOG.isInfoEnabled()){
+            LOG.info("Getting next kvp");
+            LOG.info(String.format("POS:%s; END:%s; MAX_LENGTH:%s;", pos, end, maxWordLength));
+        }
         if (key == null) {
             key = new LongWritable();
         }

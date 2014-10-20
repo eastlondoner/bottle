@@ -1,6 +1,8 @@
 package com.geneix.bottle;
 
 import com.google.common.base.Charsets;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.io.Text;
@@ -21,6 +23,7 @@ import java.util.TreeSet;
  */
 public class WordReader implements Closeable {
 
+    private static final Log LOG = LogFactory.getLog(WordReader.class);
     private static final CharsetEncoder UTF_8_ENCODER = Charsets.UTF_8.newEncoder();
 
     private static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
@@ -134,17 +137,18 @@ public class WordReader implements Closeable {
      */
     private int readCustomLine(Text str, int maxWordLength, int maxBytesToConsume)
             throws IOException {
-
+        if(LOG.isInfoEnabled()){
+            LOG.info("Read Word Called");
+        }
         str.clear();
         int txtLength = 0; // tracks str.getLength(), as an optimization
         long bytesConsumed = 0;
         boolean terminatingSpaceReached = false;
         do {
-            int startPosn = bufferPosn;
             long startBytes = bufferBytePosn;
-            int wordStart = startPosn;
+            int wordStart = bufferPosn;
             if (bufferPosn >= bufferLength) {
-                startPosn = wordStart = bufferPosn = 0;
+                wordStart = bufferPosn = 0;
                 bufferLength = fillBuffer(in, buffer);
                 startBytes = in.getBytePosition(0);
                 if (bufferLength <= 0) {
@@ -154,6 +158,9 @@ public class WordReader implements Closeable {
             //First read past any leading whitespace
             for (; bufferPosn < bufferLength; ++bufferPosn) {
                 if (!wordDelimiters.contains(buffer[bufferPosn])) {
+                    if(LOG.isInfoEnabled()){
+                        LOG.info("Found a non-whitespace codepoint");
+                    }
                     wordStart = bufferPosn;
                     bufferPosn++;
                     break;
@@ -163,11 +170,15 @@ public class WordReader implements Closeable {
             //Now read all characters until delimiter
             for (; bufferPosn < bufferLength; ++bufferPosn) {
                 if (wordDelimiters.contains(buffer[bufferPosn])) {
+                    if(LOG.isInfoEnabled()){
+                        LOG.info("Found a whitespace");
+                    }
                     terminatingSpaceReached = true;
                     bufferPosn++;
                     break;
                 }
             }
+
             bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
             int appendLength = bufferPosn - wordStart;
             if (appendLength > maxWordLength - txtLength) {
