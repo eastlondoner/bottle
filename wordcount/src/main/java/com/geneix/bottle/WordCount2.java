@@ -53,10 +53,10 @@ public class WordCount2 {
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
 
-        Job job = Job.getInstance(conf, "wordcount");
+        Job job = Job.getInstance(conf, "wordcount2");
 
-        job.setJarByClass(WordCount.class);
-        job.setOutputKeyClass(Text.class);
+        job.setJarByClass(WordCount2.class);
+        job.setOutputKeyClass(Word.class);
         job.setOutputValueClass(IntWritable.class);
 
         job.setMapperClass(Map.class);
