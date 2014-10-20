@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sudo yum install git
+
 #git clone https://github.com/eastlondoner/bottle.git
 #cd bottle
 
