@@ -77,9 +77,14 @@ public class CodePointReader implements Closeable {
 
     public long getBytePosition(int n) {
         if(n == -1){
+            if(LOG.isInfoEnabled()) {
+                LOG.info(String.format("Getting all bytes read in slightly dodgy way"));
+            }
             return bytesRead;
         }
-        LOG.info(String.format("Getting byte position corresponding to buffer position %s ... %s", n, bytePositions[n]));
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Getting byte position corresponding to buffer position %s ... %s", n, bytePositions[n]));
+        }
         return bytePositions[n];
     }
 
