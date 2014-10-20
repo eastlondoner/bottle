@@ -4,20 +4,27 @@ package com.geneix.bottle;
  * Created by andrew on 07/10/14.
  * THIS IS NOT THREAD SAFE
  */
+
+import com.google.common.base.Charsets;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSDataInputStream;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.charset.StandardCharsets;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharsetDecoder;
 
 public class CodePointReader implements Closeable {
+    private static final Log LOG = LogFactory.getLog(CodePointReader.class);
     private final static int BYTE_BUFFER_SIZE = 128;
+
+    private final byte[] lookAheadByteBuffer = new byte[1];
     private final FSDataInputStream in;
     private final ReUsableByteArrayInputStream inStream;
-    private final InputStreamReader charSource;
-    private int lookAhead;
     private final byte[] byteBuffer;
-
+    private int lookAhead;
     //This maps the codepoint array to the byte position in the source file
     private long[] bytePositions;
 
@@ -26,39 +33,41 @@ public class CodePointReader implements Closeable {
 
     private long bytesRead = 0;
 
-    private void lookAhead() throws IOException {
-        lookAhead = charSource.read();
-        if(lookAhead == -1){
-            //We're either at the end of the buffer or nthe end of the file
-
-            //Try refilling the buffer
-            bufLength = in.read(byteBuffer);
-            if(bufLength <= 0){
-                //EOF
-                return;
-            } else {
-                inStream.resetBufferAndLength(bufLength);
-                lookAhead = charSource.read();
-            }
-        }
-    }
-
-    public long getBytePosition(int n){
-        return bytePositions[n];
-    }
-
-    public CodePointReader(FSDataInputStream fileStream, int start) throws IOException {
+    //TODO: use buffer size arg
+    public CodePointReader(FSDataInputStream fileStream, int bufferSize) throws IOException {
         this.in = fileStream;
         byteBuffer = new byte[BYTE_BUFFER_SIZE];
         bufLength = in.read(byteBuffer);
         inStream = new ReUsableByteArrayInputStream(byteBuffer);
-        this.charSource = new InputStreamReader( inStream, "UTF8");
         lookAhead();
+    }
+
+    private void lookAhead() throws IOException {
+        inStream.read(lookAheadByteBuffer);
+        Charsets.UTF_8.decode(ByteBuffer.wrap(lookAheadByteBuffer));
+        if (lookAhead == -1) {
+            //We're either at the end of the buffer or nthe end of the file
+
+            //Try refilling the buffer
+            bufLength = in.read(byteBuffer);
+            if (bufLength <= 0) {
+                //EOF
+                return;
+            } else {
+                inStream.resetBufferAndLength(bufLength);
+                lookAhead = inStream.read();
+            }
+        }
+    }
+
+    public long getBytePosition(int n) {
+        LOG.info(String.format("Getting byte position corresponding to buffer position %s ... %s", n, bytePositions[n]));
+        return bytePositions[n];
     }
 
     //This reads chars one at a time and outputs their codepoint
     private int read() throws IOException {
-        if(lookAhead == -1){
+        if (lookAhead == -1) {
             return -1;
         }
         try {
@@ -66,9 +75,11 @@ public class CodePointReader implements Closeable {
             if (Character.isHighSurrogate(high)) {
                 lookAhead();
                 int next = lookAhead;
-                if (next == -1) { throw new IOException("malformed character"); }
+                if (next == -1) {
+                    throw new IOException("malformed character");
+                }
                 char low = (char) next;
-                if(!Character.isLowSurrogate(low)) {
+                if (!Character.isLowSurrogate(low)) {
                     throw new IOException("malformed sequence");
                 }
                 return Character.toCodePoint(high, low);
@@ -83,18 +94,20 @@ public class CodePointReader implements Closeable {
 
     //This reads codepoints into buffer array and returns the number of fresh codepoints read in the buffer
     public long read(int[] buff) throws IOException {
-        if(bytePositions == null || bytePositions.length < buff.length){
+        if (bytePositions == null || bytePositions.length < buff.length) {
             bytePositions = new long[buff.length];
         }
-        for (int i=0; i<buff.length; i++){
+        for (int i = 0; i < buff.length; i++) {
             buff[i] = read();
             bytePositions[i] = bytesRead;
-            if(buff[i] == -1){
-                return i==0? -1 : i+1;
+            if (buff[i] == -1) {
+                return i == 0 ? -1 : i + 1;
             }
         }
         return buff.length;
     }
 
-    public void close() throws IOException { charSource.close(); }
+    public void close() throws IOException {
+        charSource.close();
+    }
 }
