@@ -178,10 +178,15 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
             }
 
             // line too long. try again
-            LOG.info("Skipped word of size " + newSize + " at pos " +
-                    (pos - newSize));
+            if(LOG.isInfoEnabled()) {
+                LOG.info("Skipped word of size " + newSize + " at pos " +
+                        (pos - newSize));
+            }
         }
         if (newSize == 0) {
+            if(LOG.isInfoEnabled()) {
+                LOG.info("Empty word?");
+            }
             key = null;
             value = null;
             return false;

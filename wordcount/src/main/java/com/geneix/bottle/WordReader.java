@@ -159,7 +159,8 @@ public class WordReader implements Closeable {
             for (; bufferPosn < bufferLength; ++bufferPosn) {
                 if (!wordDelimiters.contains(buffer[bufferPosn])) {
                     if(LOG.isInfoEnabled()){
-                        LOG.info("Found a non-whitespace codepoint");
+                        LOG.info("Found a non-whitespace codepoint.");
+                        LOG.info(String.format("Buffer position: %s",bufferPosn));
                     }
                     wordStart = bufferPosn;
                     bufferPosn++;
@@ -172,6 +173,7 @@ public class WordReader implements Closeable {
                 if (wordDelimiters.contains(buffer[bufferPosn])) {
                     if(LOG.isInfoEnabled()){
                         LOG.info("Found a whitespace");
+                        LOG.info(String.format("Buffer position: %s",bufferPosn));
                     }
                     terminatingSpaceReached = true;
                     bufferPosn++;
@@ -180,9 +182,16 @@ public class WordReader implements Closeable {
             }
 
             bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
+            if(LOG.isInfoEnabled()){
+                LOG.info(String.format("Bytes consumed: %s",bytesConsumed));
+            }
+
             int appendLength = bufferPosn - wordStart;
             if (appendLength > maxWordLength - txtLength) {
                 appendLength = maxWordLength - txtLength;
+            }
+            if(LOG.isInfoEnabled()){
+                LOG.info(String.format("Append Length: %s",appendLength));
             }
             if (appendLength > 0) {
                 str.append(new String(buffer, wordStart, appendLength).getBytes(), 0, appendLength); //TODO get rid of this cast to string ?
@@ -192,6 +201,9 @@ public class WordReader implements Closeable {
                 && bytesConsumed < maxBytesToConsume);
         if (bytesConsumed > Integer.MAX_VALUE) {
             throw new IOException("Too many bytes before delimiter: " + bytesConsumed);
+        }
+        if(LOG.isInfoEnabled()){
+            LOG.info(String.format("Word found: %s",str.toString()));
         }
         bufferBytePosn = in.getBytePosition(bufferPosn);
         return (int) bytesConsumed;
