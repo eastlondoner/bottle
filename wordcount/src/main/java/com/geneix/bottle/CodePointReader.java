@@ -72,7 +72,7 @@ public class CodePointReader implements Closeable {
             result.throwException();
         }
         lookAhead = lookAheadCharOut.get(0);
-        lookAheadCharOut.reset();
+        lookAheadCharOut.clear();
     }
 
     public long getBytePosition(int n) {
