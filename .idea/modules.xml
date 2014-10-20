@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/bottle.iml" filepath="$PROJECT_DIR$/bottle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pubmedcount/pubmedcount.iml" filepath="$PROJECT_DIR$/pubmedcount/pubmedcount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" filepath="$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandbox/sandbox.iml" filepath="$PROJECT_DIR$/sandbox/sandbox.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wordcount/wordcount.iml" filepath="$PROJECT_DIR$/wordcount/wordcount.iml" />
+    </modules>
+  </component>
+</project>
+

@@ -1,0 +1,11 @@
+{
+    "name": "pubmedslurp",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "underscore": "*",
+        "xml-stream": "*",
+        "pkgcloud" : "*",
+        "stream-stream" : "*"
+    }
+}
