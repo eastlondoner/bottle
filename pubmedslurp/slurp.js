@@ -339,7 +339,7 @@ function getCloudFile(options, cb) {
 
         uploadSocket = rackspace.upload({
                 container: container, // this can be either the name or an instance of container
-                remote: 'pharmacogeneticsData', // name of the new file,
+                remote: '2013Data', // name of the new file,
                 stream: outStream
             },
             function (err, result) {
@@ -359,8 +359,8 @@ function getCloudFile(options, cb) {
 idsFile.on("open", function () {
     console.log("FILE OPENED");
     idsFile.write("<IdList>\n");
-    //search(PUBMED_DB_NAME,'("2000/1/1"[Date - Publication] : "2001/1/1"[Date - Publication])', function(err, data){
-    search(PUBMED_DB_NAME, '(pharmacogenetics[title])', function (err, data) {
+    search(PUBMED_DB_NAME,'("2013/1/1"[Date - Publication] : "2014/1/1"[Date - Publication])', function(err, data){
+    //search(PUBMED_DB_NAME, '(mouse[title])', function (err, data) {
         try {
             if (err) {
                 console.log("Something went wrong");
