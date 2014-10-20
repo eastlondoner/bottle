@@ -18,6 +18,9 @@ public class CodePointReader implements Closeable {
     private int lookAhead;
     private final byte[] byteBuffer;
 
+    //This maps the codepoint array to the byte position in the source file
+    private long[] bytePositions;
+
     //Number of real bytes in the buffer
     private int bufLength;
 
@@ -38,6 +41,10 @@ public class CodePointReader implements Closeable {
                 lookAhead = charSource.read();
             }
         }
+    }
+
+    public long getBytePosition(int n){
+        return bytePositions[n];
     }
 
     public CodePointReader(FSDataInputStream fileStream, int start) throws IOException {
@@ -74,15 +81,19 @@ public class CodePointReader implements Closeable {
         }
     }
 
-    //This reads codepoints into buffer array and returns the number of bytes read in the underlying file (sort of)
+    //This reads codepoints into buffer array and returns the number of fresh codepoints read in the buffer
     public long read(int[] buff) throws IOException {
+        if(bytePositions == null || bytePositions.length < buff.length){
+            bytePositions = new long[buff.length];
+        }
         for (int i=0; i<buff.length; i++){
             buff[i] = read();
+            bytePositions[i] = bytesRead;
             if(buff[i] == -1){
                 return i==0? -1 : i+1;
             }
         }
-        return bytesRead;
+        return buff.length;
     }
 
     public void close() throws IOException { charSource.close(); }

@@ -53,17 +53,19 @@ public class WordReader implements Closeable {
             0x205F,
             0x3000
     ));
-    private FSDataInputStream in;
+    private CodePointReader in;
     private int[] buffer;
 
     //The capacity of the buffer;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
 
     // the number of chars of real data in the buffer
-    private int bufferLength = 0;
+    private long bufferLength = 0;
 
-    // the current position in the buffer
+    // the current position in the buffer in codepoints
     private int bufferPosn = 0;
+    // the current position in the buffer in bytes
+    private long bufferBytePosn = 0;
 
     /**
      * Create a line reader that reads from the given stream using the
@@ -72,7 +74,7 @@ public class WordReader implements Closeable {
      * @param in The input stream
      * @throws IOException
      */
-    public WordReader(FSDataInputStream in) {
+    public WordReader(FSDataInputStream in) throws IOException {
         this(in, DEFAULT_BUFFER_SIZE);
     }
 
@@ -84,8 +86,8 @@ public class WordReader implements Closeable {
      * @param bufferSize Size of the read buffer
      * @throws IOException
      */
-    public WordReader(FSDataInputStream in, int bufferSize) {
-        this.in = in;
+    public WordReader(FSDataInputStream in, int bufferSize) throws IOException {
+        this.in = new CodePointReader(in, bufferSize);
         this.bufferSize = bufferSize;
         this.buffer = new int[this.bufferSize];
     }
@@ -104,12 +106,8 @@ public class WordReader implements Closeable {
         this(in, conf.getInt("io.file.buffer.size", DEFAULT_BUFFER_SIZE));
     }
 
-    protected static int fillBuffer(FSDataInputStream in, int[] buffer) throws IOException {
-        int bytes = 0;
-        for (int i : buffer) {
-            bytes+=in.read(UTF_8_ENCODER.encode(CharBuffer.wrap(Character.toChars(i))));
-        }
-        return bytes;
+    protected static long fillBuffer(CodePointReader in, int[] buffer) throws IOException {
+        return in.read(buffer);
     }
 
     /**
@@ -143,10 +141,12 @@ public class WordReader implements Closeable {
         boolean terminatingSpaceReached = false;
         do {
             int startPosn = bufferPosn;
+            long startBytes = bufferBytePosn;
             int wordStart = startPosn;
             if (bufferPosn >= bufferLength) {
                 startPosn = wordStart = bufferPosn = 0;
                 bufferLength = fillBuffer(in, buffer);
+                startBytes = in.getBytePosition(0);
                 if (bufferLength <= 0) {
                     break; // EOF
                 }
@@ -168,8 +168,7 @@ public class WordReader implements Closeable {
                     break;
                 }
             }
-            int readLength = bufferPosn - startPosn;
-            bytesConsumed += readLength;
+            bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
             int appendLength = bufferPosn - wordStart;
             if (appendLength > maxWordLength - txtLength) {
                 appendLength = maxWordLength - txtLength;
@@ -183,6 +182,7 @@ public class WordReader implements Closeable {
         if (bytesConsumed > Integer.MAX_VALUE) {
             throw new IOException("Too many bytes before delimiter: " + bytesConsumed);
         }
+        bufferBytePosn = in.getBytePosition(bufferPosn);
         return (int) bytesConsumed;
     }
 

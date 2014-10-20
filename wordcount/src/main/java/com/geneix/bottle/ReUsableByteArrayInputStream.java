@@ -22,6 +22,7 @@ public class ReUsableByteArrayInputStream extends ByteArrayInputStream {
         count = newLength;
     }
 
+    //This isn't strictly the number of bytes read
     public long totalBytesRead(){
         return bytesRead+pos;
     }
