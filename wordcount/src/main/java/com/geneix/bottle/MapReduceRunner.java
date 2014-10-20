@@ -9,6 +9,6 @@ public class MapReduceRunner {
     public static void main(String[] args) throws Exception {
 
         Method main = Class.forName(args[0]).getMethod("main", String[].class);
-        main.invoke(null, args);
+        main.invoke(null, (Object)args);
     }
 }
