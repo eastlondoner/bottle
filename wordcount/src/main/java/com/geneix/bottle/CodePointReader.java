@@ -19,7 +19,7 @@ import java.nio.charset.CoderResult;
 
 public class CodePointReader implements Closeable {
     private static final Log LOG = LogFactory.getLog(CodePointReader.class);
-    private final static int BYTE_BUFFER_SIZE = 128;
+    private final static int BYTE_BUFFER_SIZE = 64;
 
     private final CharsetDecoder decoder = Charsets.UTF_8.newDecoder();
     private final byte[] lookAheadByteBuffer = new byte[1];
@@ -83,6 +83,7 @@ public class CodePointReader implements Closeable {
     //This reads chars one at a time and outputs their codepoint
     private int read() throws IOException {
         if (lookAhead == -1) {
+            bytesRead = inStream.totalBytesRead();
             return -1;
         }
         try {

@@ -150,7 +150,12 @@ public class WordReader implements Closeable {
             if (bufferPosn >= bufferLength) {
                 wordStart = bufferPosn = 0;
                 bufferLength = fillBuffer(in, buffer);
-                startBytes = in.getBytePosition(0);
+
+                if(LOG.isInfoEnabled()){
+                    LOG.info(String.format("Buffer length: %s",bufferLength));
+                }
+
+                startBytes = in.getBytePosition(bufferPosn);
                 if (bufferLength <= 0) {
                     break; // EOF
                 }
