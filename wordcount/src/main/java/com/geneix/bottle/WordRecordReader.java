@@ -68,6 +68,9 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
 
     public void initialize(InputSplit genericSplit,
                            TaskAttemptContext context) throws IOException {
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Initializing WordRecordReader");
+        }
         FileSplit split = (FileSplit) genericSplit;
         Configuration job = context.getConfiguration();
         this.maxWordLength = job.getInt(MAX_WORD_LENGTH, Integer.MAX_VALUE);
