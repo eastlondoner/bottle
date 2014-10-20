@@ -171,6 +171,11 @@ public class WordReader implements Closeable {
                     bufferPosn++;
                     break;
                 }
+                if(txtLength > 0){
+                    //we found a space after refulling buffer
+                    terminatingSpaceReached = true;
+                    break;
+                }
             }
 
             //Now read all characters until delimiter
@@ -185,8 +190,12 @@ public class WordReader implements Closeable {
                     break;
                 }
             }
+            if(!terminatingSpaceReached){ // this means we read all characters till end of the
+                bytesConsumed = in.getBytePosition((int)bufferLength -1) - startBytes;
+            } else {
+                bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
+            }
 
-            bytesConsumed = in.getBytePosition(bufferPosn)-startBytes;
             if(LOG.isInfoEnabled()){
                 LOG.info(String.format("Bytes consumed: %s",bytesConsumed));
             }
