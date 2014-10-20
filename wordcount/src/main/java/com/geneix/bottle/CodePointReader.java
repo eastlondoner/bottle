@@ -12,15 +12,18 @@ import org.apache.hadoop.fs.FSDataInputStream;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
 
 public class CodePointReader implements Closeable {
     private static final Log LOG = LogFactory.getLog(CodePointReader.class);
     private final static int BYTE_BUFFER_SIZE = 128;
 
+    private final CharsetDecoder decoder = Charsets.UTF_8.newDecoder();
     private final byte[] lookAheadByteBuffer = new byte[1];
+    private final CharBuffer lookAheadCharOut = CharBuffer.wrap(new char[1]);
     private final FSDataInputStream in;
     private final ReUsableByteArrayInputStream inStream;
     private final byte[] byteBuffer;
@@ -43,21 +46,33 @@ public class CodePointReader implements Closeable {
     }
 
     private void lookAhead() throws IOException {
-        inStream.read(lookAheadByteBuffer);
-        Charsets.UTF_8.decode(ByteBuffer.wrap(lookAheadByteBuffer));
-        if (lookAhead == -1) {
-            //We're either at the end of the buffer or nthe end of the file
-
-            //Try refilling the buffer
-            bufLength = in.read(byteBuffer);
-            if (bufLength <= 0) {
-                //EOF
-                return;
-            } else {
-                inStream.resetBufferAndLength(bufLength);
-                lookAhead = inStream.read();
+        CoderResult result = null;
+        int n = 0;
+        do {
+            if (inStream.read(lookAheadByteBuffer) == -1) {
+                //Try refilling the buffer
+                bufLength = in.read(byteBuffer);
+                if (bufLength <= 0) {
+                    //EOF
+                    lookAhead = -1;
+                    return;
+                } else {
+                    inStream.resetBufferAndLength(bufLength);
+                    inStream.read(lookAheadByteBuffer);
+                }
             }
+            result = decoder.decode(ByteBuffer.wrap(lookAheadByteBuffer), lookAheadCharOut, false);
+            n++;
+        } while (result.isUnderflow() && n < 6);
+        if (n > 6) {
+            throw new IOException("Cannot have more than 6 bytes in a UFT8 character");
         }
+
+        if (result.isUnderflow() || result.isMalformed() || result.isOverflow() || result.isError()) {
+            throw new IOException("Error decoding UTF8");
+        }
+        lookAhead = lookAheadCharOut.get(0);
+        lookAheadCharOut.reset();
     }
 
     public long getBytePosition(int n) {
@@ -108,6 +123,6 @@ public class CodePointReader implements Closeable {
     }
 
     public void close() throws IOException {
-        charSource.close();
+        inStream.close();
     }
 }
