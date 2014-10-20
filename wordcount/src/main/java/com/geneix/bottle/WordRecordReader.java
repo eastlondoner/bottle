@@ -68,8 +68,8 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
 
     public void initialize(InputSplit genericSplit,
                            TaskAttemptContext context) throws IOException {
-        if(LOG.isDebugEnabled()){
-            LOG.debug("Initializing WordRecordReader");
+        if(LOG.isInfoEnabled()){
+            LOG.info("Initializing WordRecordReader");
         }
         FileSplit split = (FileSplit) genericSplit;
         Configuration job = context.getConfiguration();
@@ -173,7 +173,7 @@ public class WordRecordReader extends RecordReader<LongWritable, Word> {
             }
 
             // line too long. try again
-            LOG.info("Skipped line of size " + newSize + " at pos " +
+            LOG.info("Skipped word of size " + newSize + " at pos " +
                     (pos - newSize));
         }
         if (newSize == 0) {
