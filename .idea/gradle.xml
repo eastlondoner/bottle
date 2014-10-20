@@ -4,11 +4,22 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/pubmedcount" />
+        <option name="gradleHome" value="/usr/share/gradle" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/pubmedcount" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/wordcount" />
         <option name="gradleHome" value="/usr/share/gradle" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/wordcount" />
+            <option value="$PROJECT_DIR$/wordcount/pubmedcount" />
             <option value="$PROJECT_DIR$/wordcount/wordcount" />
           </set>
         </option>

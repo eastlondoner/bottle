@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
 /**
  * Created by andrew on 06/10/14.
  */
-public class WordAnalyze {
+public class WordCount2 {
 
     //Need a tokenizer
     public static class CustomFileInputFormat extends FileInputFormat<LongWritable,Word>{
