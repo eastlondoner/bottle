@@ -157,6 +157,9 @@ public class WordReader implements Closeable {
 
                 startBytes = in.getBytePosition(bufferPosn);
                 if (bufferLength <= 0) {
+                    if(LOG.isInfoEnabled()){
+                        LOG.info("EOF Reached");
+                    }
                     break; // EOF
                 }
             }
