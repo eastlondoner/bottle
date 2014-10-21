@@ -4,7 +4,7 @@
 		module="bottle"
 		revision="unspecified"
 		status="integration"
-		publication="20141021205003"
+		publication="20141021212155"
 	/>
 	<configurations>
 		<conf name="archives" visibility="public" description="Configuration for archive artifacts."/>
