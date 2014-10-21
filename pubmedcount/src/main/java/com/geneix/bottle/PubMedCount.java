@@ -123,10 +123,10 @@ public class PubMedCount {
         }
     }
 
-    public static class MapTextToWordCountHistogram extends Mapper<Text, Text, Text, ValueHistogram> {
+    public static class MapTextToWordCountHistogram extends Mapper<Text, Text, Text, WordHistogram> {
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
 
-            ValueHistogram outValue = new ValueHistogram();
+            WordHistogram outValue = new WordHistogram();
             StringTokenizer tokenizer = new StringTokenizer(value.toString());
             while (tokenizer.hasMoreTokens()) {
                 outValue.addNextValue(tokenizer.nextToken());
