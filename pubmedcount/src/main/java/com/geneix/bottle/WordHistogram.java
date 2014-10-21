@@ -27,4 +27,12 @@ public class WordHistogram extends ValueHistogram implements Writable {
             addNextValue(aData);
         }
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        for (String wordAndCount : getCombinerOutput()) {
+            sb.append(wordAndCount).append("; ");
+        }
+        return sb.toString();
+    }
 }

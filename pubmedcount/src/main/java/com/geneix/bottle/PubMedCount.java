@@ -39,10 +39,11 @@ public class PubMedCount {
 
         ChainMapper.addMapper(job, MapMedlineToFields.class, LongWritable.class, Text.class, Text.class, Text.class, new Configuration(false));
         ChainMapper.addMapper(job, MapTextToWordCountHistogram.class, Text.class, Text.class, Text.class, WordHistogram.class, new Configuration(false));
+        //ChainMapper.addMapper(job, MapWordCountHistogramToOut.class, Text.class, WordHistogram.class, Text.class, Text.class, new Configuration(false));
 
         //job.setMapperClass(Map.class);
-        job.setCombinerClass(ValueAggregatorCombiner.class);
-        job.setReducerClass(ValueAggregatorReducer.class);
+        job.setCombinerClass(WordHistogramCombiner.class);
+        job.setReducerClass(WordHistogramCombiner.class);
 
         job.setInputFormatClass(PubMedFileInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
@@ -127,6 +128,20 @@ public class PubMedCount {
             for (String s : value.getCombinerOutput()) {
                 context.write(outKey, new Text(s));
             }
+        }
+    }
+    public static class WordHistogramCombiner extends Reducer<Text, WordHistogram, Text, WordHistogram> {
+
+        public void reduce(Text key, Iterable<WordHistogram> values, Context context
+        ) throws IOException, InterruptedException {
+            WordHistogram aggregator = new WordHistogram();
+            for (WordHistogram value : values) {
+                Iterator<?> datapoints = value.getCombinerOutput().iterator();
+                while (datapoints.hasNext()) {
+                    aggregator.addNextValue(datapoints.next());
+                }
+            }
+            context.write(key,aggregator);
         }
     }
 
