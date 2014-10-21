@@ -4,7 +4,7 @@
 		module="bottle"
 		revision="unspecified"
 		status="integration"
-		publication="20141020202510"
+		publication="20141021220933"
 	/>
 	<configurations>
 		<conf name="archives" visibility="public" description="Configuration for archive artifacts."/>
@@ -19,5 +19,6 @@
 	</publications>
 	<dependencies>
 		<dependency org="bottle" name="wordcount" rev="1.0" conf="compile->default"/>
+		<dependency org="bottle" name="pubmedcount" rev="1.0" conf="compile->default"/>
 	</dependencies>
 </ivy-module>

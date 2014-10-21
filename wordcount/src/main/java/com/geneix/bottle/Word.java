@@ -42,7 +42,10 @@ public class Word implements WritableComparable<Word>{
     public int compareTo(Word word) {
         int thisLength = this.txt.getLength();
         int thatLength = word.txt.getLength();
-        return thatLength < thisLength ? -1 : thatLength > thisLength ? 1 : 0;
+        if(thatLength != thisLength){
+            return thatLength < thisLength ? -1 : thatLength > thisLength ? 1 : 0;
+        }
+        return this.txt.compareTo(word.txt);
     }
 
     @Override
