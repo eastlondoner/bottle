@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
 public class PubMedCount {
 
     private static final Log LOG = LogFactory.getLog(PubMedCount.class);
-    private final static byte[] PUBMED_DELIMITER = Charsets.UTF_8.encode("\nPMID- ").array();
+    private final static byte[] PUBMED_DELIMITER = Charsets.UTF_8.encode("PMID- ").array();
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
@@ -45,7 +45,7 @@ public class PubMedCount {
         //ChainMapper.addMapper(job, MapWordCountHistogramToOut.class, Text.class, WordHistogram.class, Text.class, Text.class, new Configuration(false));
 
         //job.setMapperClass(Map.class);
-        job.setCombinerClass(WordHistogramCombiner.class);
+        //job.setCombinerClass(WordHistogramCombiner.class);
         job.setReducerClass(WordHistogramCombiner.class);
 
         job.setInputFormatClass(PubMedFileInputFormat.class);
@@ -69,9 +69,10 @@ public class PubMedCount {
     public static class MapMedlineToFields extends Mapper<LongWritable, Text, Text, Text> {
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            //First check we haven't got some bogus whitespace
+            //First check we haven't got some bogus whitespace or other junk
             String entry = value.toString().trim();
-            if (Strings.isNullOrEmpty(entry)) {
+            if (entry.length() < 32) {
+                LOG.info(String.format("Bogus line: %s", entry));
                 return;
             }
 
@@ -80,34 +81,39 @@ public class PubMedCount {
             Text outKey = new Text();
 
             //Tokenize the string into lines
-            StringTokenizer tokenizer = new StringTokenizer(entry, "\n");
+            String[] strings = entry.split("\\r?\\n");
 
             //Handle the first token (because we split on PubMedId field identifier)
-            String firstToken = tokenizer.nextToken().trim();
-
-            //Remove and windows style line ending bits left hanging around - add space because otherwise we can accidentally concatenate words
-            firstToken = firstToken.replace('\r',' ');
+            String firstToken = strings[0].trim();
 
             outKey.set("PMID");
-            outValue.set(firstToken);
-            while (tokenizer.hasMoreTokens()) {
-                String line = tokenizer.nextToken();
+            StringBuilder sb = new StringBuilder();
+            sb.append(firstToken);
+
+            for (int i=1; i< strings.length; i++) {
+                String line = strings[i];
                 if (line.charAt(4) == '-') {
                     //first write the old field
                     LOG.info(line);
+                    outValue.set(sb.toString());
+                    sb = new StringBuilder();
                     if (outValue.getLength() > 0) {
+                        LOG.info(String.format("MR1 KEY: %s; VALUE: %s", outKey, outValue));
                         context.write(outKey, outValue);
+                        outValue.clear();
                     }
 
                     //Now start the new field
                     outKey.set(line.substring(0, 4).trim());
-                    outValue.clear();
+
                 }
-                byte[] bytes = Charsets.UTF_8.encode(line.substring(5).trim()).array();
-                outValue.append(bytes, 0, bytes.length);
+                sb.append(line.substring(5));
             }
             //The final value is still in our 'buffer'
+            outValue.set(sb.toString());
+            LOG.info(String.format("MR1 KEY: %s; VALUE: %s", outKey, outValue));
             context.write(outKey, outValue);
+            outValue.clear();
         }
     }
 
@@ -115,10 +121,12 @@ public class PubMedCount {
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
 
             WordHistogram outValue = new WordHistogram();
-            StringTokenizer tokenizer = new StringTokenizer(value.toString());
-            while (tokenizer.hasMoreTokens()) {
-                outValue.addNextValue(tokenizer.nextToken());
+            String[] words = value.toString().split("\\s+");
+            for (String word : words) {
+                //LOG.info(String.format("Histogramming KEY: %s; WORD: %s", key, word));
+                outValue.addNextValue(word);
             }
+            LOG.info(String.format("Histogram for KEY: %s; %s", key, outValue.getReport()));
             context.write(key, outValue);
         }
     }
@@ -143,11 +151,20 @@ public class PubMedCount {
         public void reduce(Text key, Iterable<WordHistogram> values, Context context
         ) throws IOException, InterruptedException {
             WordHistogram aggregator = new WordHistogram();
+            int i=0;
             for (WordHistogram value : values) {
+
+                //Holy cow, MapReduce just keeps reading into the exact same WordHistogram ... cheeky!
+
+                i++;
+                LOG.info(String.format("Histogram %s for KEY: %s; %s", i, key, value.getReport()));
                 Iterator<?> datapoints = value.getCombinerOutput().iterator();
                 while (datapoints.hasNext()) {
-                    aggregator.addNextValue(datapoints.next());
+                    Object nextVal = datapoints.next();
+                    LOG.info(String.format("REDUCER KEY: %s; VALUE: %s", key, nextVal));
+                    aggregator.addNextValue(nextVal);
                 }
+
             }
             context.write(key,aggregator);
         }
