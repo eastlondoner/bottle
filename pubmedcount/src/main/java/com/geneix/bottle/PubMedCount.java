@@ -1,6 +1,7 @@
 package com.geneix.bottle;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -22,7 +23,7 @@ import java.util.StringTokenizer;
  */
 public class PubMedCount {
 
-    private final static byte[] PUBMED_DELIMITER = Charsets.UTF_8.encode("\nPMID-").array();
+    private final static byte[] PUBMED_DELIMITER = Charsets.UTF_8.encode("\nPMID- ").array();
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
@@ -59,9 +60,21 @@ public class PubMedCount {
 
     public static class MapMedlineToFields extends Mapper<LongWritable, Text, Text, Text> {
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            Text outKey = new Text();
+
+            //First check we haven't got some bogus whitespace
+            String entry = value.toString().trim();
+            if(Strings.isNullOrEmpty(entry)){
+                return;
+            }
+
+            //Declare some variables
             Text outValue = new Text();
-            StringTokenizer tokenizer = new StringTokenizer(value.toString(), "\n");
+            Text outKey = new Text();
+
+            //Tokenize the string into lines
+            StringTokenizer tokenizer = new StringTokenizer(entry, "\n");
+
+            //Handle the first token (because we split on PubMedId field identifier)
             String firstToken = tokenizer.nextToken();
             outKey.set("PMID");
             outValue.set(firstToken);
@@ -69,13 +82,15 @@ public class PubMedCount {
                 String line = tokenizer.nextToken();
                 if (line.charAt(4) == '-') {
                     //first write the old field
-                    context.write(outKey, outValue);
+                    if(outValue.getLength() > 0) {
+                        context.write(outKey, outValue);
+                    }
 
                     //Now start the new field
-                    outKey = new Text(line.substring(0, 4));
+                    outKey = new Text(line.substring(0, 4).trim());
                     outValue = new Text();
                 }
-                byte[] bytes = Charsets.UTF_8.encode(line.substring(5)).array();
+                byte[] bytes = Charsets.UTF_8.encode(line.substring(5).trim()).array();
                 outValue.append(bytes, 0, bytes.length);
             }
             //The final value is still in our 'buffer'
