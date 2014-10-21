@@ -2,6 +2,8 @@ package com.geneix.bottle;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -26,6 +28,7 @@ import java.util.StringTokenizer;
  */
 public class PubMedCount {
 
+    private static final Log LOG = LogFactory.getLog(PubMedCount.class);
     private final static byte[] PUBMED_DELIMITER = Charsets.UTF_8.encode("\nPMID- ").array();
 
     public static void main(String[] args) throws Exception {
@@ -91,13 +94,14 @@ public class PubMedCount {
                 String line = tokenizer.nextToken();
                 if (line.charAt(4) == '-') {
                     //first write the old field
+                    LOG.info(line);
                     if (outValue.getLength() > 0) {
                         context.write(outKey, outValue);
                     }
 
                     //Now start the new field
-                    outKey = new Text(line.substring(0, 4).trim());
-                    outValue = new Text();
+                    outKey.set(line.substring(0, 4).trim());
+                    outValue.clear();
                 }
                 byte[] bytes = Charsets.UTF_8.encode(line.substring(5).trim()).array();
                 outValue.append(bytes, 0, bytes.length);
