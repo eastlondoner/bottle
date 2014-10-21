@@ -18,6 +18,7 @@ subprojects {
 
 dependencies {
     compile project(':wordcount')
+    compile project(':pubmedcount')
 }
 
 jar {
