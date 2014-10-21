@@ -33,6 +33,6 @@ public class WordHistogram extends ValueHistogram implements Writable {
         for (String wordAndCount : getCombinerOutput()) {
             sb.append(wordAndCount).append("; ");
         }
-        return sb.toString();
+        return sb.append("\n").toString();
     }
 }

@@ -80,7 +80,11 @@ public class PubMedCount {
             StringTokenizer tokenizer = new StringTokenizer(entry, "\n");
 
             //Handle the first token (because we split on PubMedId field identifier)
-            String firstToken = tokenizer.nextToken();
+            String firstToken = tokenizer.nextToken().trim();
+
+            //Remove and windows style line ending bits left hanging around - add space because otherwise we can accidentally concatenate words
+            firstToken = firstToken.replace('\r',' ');
+
             outKey.set("PMID");
             outValue.set(firstToken);
             while (tokenizer.hasMoreTokens()) {
