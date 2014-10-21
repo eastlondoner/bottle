@@ -16,8 +16,8 @@ public class WordHistogram extends ValueHistogram implements Writable {
 
     @Override
     public void write(DataOutput out) throws IOException {
-        ArrayList<String> outdata = getCombinerOutput();
-        WritableUtils.writeStringArray(out, outdata.toArray(new String[outdata.size()]));
+        ArrayList<String> outData = getCombinerOutput();
+        WritableUtils.writeStringArray(out, outData.toArray(new String[outData.size()]));
     }
 
     @Override

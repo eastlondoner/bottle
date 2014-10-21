@@ -8,6 +8,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.aggregate.ValueAggregatorBaseDescriptor;
+import org.apache.hadoop.mapreduce.lib.aggregate.ValueAggregatorCombiner;
 import org.apache.hadoop.mapreduce.lib.aggregate.ValueAggregatorReducer;
 import org.apache.hadoop.mapreduce.lib.aggregate.ValueHistogram;
 import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
@@ -40,7 +41,7 @@ public class PubMedCount {
         ChainMapper.addMapper(job, MapTextToWordCountHistogram.class, Text.class, Text.class, Text.class, WordHistogram.class, new Configuration(false));
 
         //job.setMapperClass(Map.class);
-        job.setCombinerClass(WordHistogramCombiner.class);
+        job.setCombinerClass(ValueAggregatorCombiner.class);
         job.setReducerClass(ValueAggregatorReducer.class);
 
         job.setInputFormatClass(PubMedFileInputFormat.class);
@@ -53,28 +54,6 @@ public class PubMedCount {
         System.exit(code);
     }
 
-    public static class WordHistogramCombiner extends Reducer<Text, WordHistogram, Text, Text> {
-        public static final Text EMPTY_TEXT = new Text();
-
-        public static Text getKey(Text id) {
-            return ValueAggregatorBaseDescriptor.generateEntry(ValueAggregatorBaseDescriptor.VALUE_HISTOGRAM, id.toString(), EMPTY_TEXT).getKey();
-        }
-
-        public void reduce(Text key, Iterable<WordHistogram> values, Context context
-        ) throws IOException, InterruptedException {
-            ValueHistogram aggregator = new ValueHistogram();
-            for (WordHistogram value : values) {
-                Iterator<?> datapoints = value.getCombinerOutput().iterator();
-                while (datapoints.hasNext()) {
-                    aggregator.addNextValue(datapoints.next());
-                }
-            }
-            Text outKey = getKey(key);
-            for (String s : aggregator.getCombinerOutput()) {
-                context.write(outKey, new Text(s));
-            }
-        }
-    }
 
     public static class PubMedFileInputFormat extends FileInputFormat<LongWritable, Text> {
         @Override
@@ -132,6 +111,22 @@ public class PubMedCount {
                 outValue.addNextValue(tokenizer.nextToken());
             }
             context.write(key, outValue);
+        }
+    }
+
+    public static class MapWordCountHistogramToOut extends Mapper<Text, WordHistogram, Text, Text> {
+        public static final Text EMPTY_TEXT = new Text();
+
+        public static Text getKey(Text id) {
+            return ValueAggregatorBaseDescriptor.generateEntry(ValueAggregatorBaseDescriptor.VALUE_HISTOGRAM, id.toString(), EMPTY_TEXT).getKey();
+        }
+
+        public void map(Text key, WordHistogram value, Context context
+        ) throws IOException, InterruptedException {
+            Text outKey = getKey(key);
+            for (String s : value.getCombinerOutput()) {
+                context.write(outKey, new Text(s));
+            }
         }
     }
 
