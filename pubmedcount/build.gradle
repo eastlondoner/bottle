@@ -5,4 +5,5 @@ sourceCompatibility = 1.7
 
 dependencies {
     testCompile group: 'org.apache.mrunit', name: 'mrunit',  version: '1.1.0', classifier: 'hadoop2'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
