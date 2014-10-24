@@ -38,14 +38,22 @@ public class WordHistogram extends ValueHistogram implements Writable {
     @Override
     public void readFields(DataInput in) throws IOException {
         int treeSize = getReportItems().size();
-        LOG.info(String.format("TREE SIZE ON READ: %s", treeSize));
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("TREE SIZE ON READ: %s", treeSize));
+        }
+
         if(treeSize > 0){
             //Holy cow, MapReduce just keeps reading into the exact same instance in the reducer ... cheeky!
             //TODO: actually make use of this behaviour
             reset();
         }
         int len = in.readInt();
-        LOG.info(String.format("Reading histogram data. STRINGS: %s", len));
+
+        if(LOG.isInfoEnabled()) {
+            LOG.info(String.format("Reading histogram data. STRINGS: %s", len));
+        }
+
         if (len == -1) return;
         for(int i = 0; i < len; i++) {
             String str = WritableUtils.readString(in);
@@ -57,6 +65,16 @@ public class WordHistogram extends ValueHistogram implements Writable {
     @Override
     public synchronized void addNextValue(Object val){
         super.addNextValue(val);
+    }
+
+    /**
+     * Same as addNextValue(Object val) but returning the object for fluent style
+     * @param val
+     * @return this Histogram for fluency
+     */
+    public synchronized WordHistogram withValue(Object val){
+        super.addNextValue(val);
+        return this;
     }
 
     public String toString() {
@@ -71,5 +89,22 @@ public class WordHistogram extends ValueHistogram implements Writable {
             sb.append(val).append("\t").append(count.longValue()).append("; ");
         }
         return sb.append("\n").toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WordHistogram)) return false;
+
+        WordHistogram that = (WordHistogram) o;
+
+        if(!this.getReportItems().equals((that.getReportItems()))) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        throw new RuntimeException("It's not safe to hashcode this object");
     }
 }

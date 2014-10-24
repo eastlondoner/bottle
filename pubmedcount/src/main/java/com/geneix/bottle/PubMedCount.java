@@ -102,7 +102,7 @@ public class PubMedCount {
                     break;
                 default:
                     LOG.error("Unexpected type " + value.getType().name());
-                    words = null; // This will cause an NPE
+                    words = null; // This will cause an NPE below. This should never happen
             }
 
             WordHistogram outValue = new WordHistogram();

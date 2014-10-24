@@ -2,18 +2,20 @@ package com.geneix.bottle.mappers;
 
 import com.geneix.bottle.MedlineField;
 import com.geneix.bottle.MedlineTokenizer;
-import com.geneix.bottle.PubMedCount;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
 /**
-* Created by Andrew on 24/10/2014.
-*/
+ * Created by Andrew on 24/10/2014.
+ */
 public class MapMedlineToFields extends Mapper<LongWritable, Text, Text, MedlineField> {
+    private final static Logger LOG = Logger.getLogger(MapMedlineToFields.class);
+
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
         //First check we haven't got some bogus whitespace or other junk
@@ -45,11 +47,11 @@ public class MapMedlineToFields extends Mapper<LongWritable, Text, Text, Medline
 
         String withoutWhitespace = entry.replaceAll("\\s|\\r|\\n|\\t", "");
         if (withoutWhitespace.isEmpty()) {
-            if (PubMedCount.LOG.isInfoEnabled()) {
-                PubMedCount.LOG.info(String.format("Bogus whitespace"));
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Bogus whitespace"));
             }
         } else {
-            PubMedCount.LOG.warn(String.format("Bogus line: %s", entry));
+            LOG.warn(String.format("Bogus line: %s", entry));
             throw new IOException("Error parsing medline entry - UNEXPECTED DATA");
         }
         return false;
