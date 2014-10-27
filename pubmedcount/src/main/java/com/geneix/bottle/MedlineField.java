@@ -1,6 +1,7 @@
 package com.geneix.bottle;
 
 import com.google.common.collect.*;
+import org.apache.commons.lang.WordUtils;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableUtils;
@@ -144,10 +145,18 @@ public class MedlineField implements Writable {
 
     @Override
     public String toString() {
-        return "MedlineField{" +
-                "fieldName='" + fieldName + '\'' +
-                ", properties=" + properties +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : properties.entries()) {
+            String key = entry.getKey();
+            int paddingRequired = 4 - key.length();
+            sb.append(key);
+            for (int i = 0; i < paddingRequired; i++) {
+                sb.append(' ');
+            }
+            sb.append("- ").append(WordUtils.wrap(entry.getValue(), 81, "\n      ", false));
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     @Override

@@ -1,0 +1,62 @@
+AB	&	1; 1	2; 10(-13	2; 1017	1; 14	1; 16	1; 17	1; 19	1; 2.1-10.8	1; 2014	2; 2014.	1; 263	1; 4.7-fold	1; 43	1; 95%	1; =	2; A	1; ABCB1	4; AIM:	1; After	1; CONCLUSION:	1; Center	1; Children	1; Currently	1; ED	4; ED.	1; Estonia	1; Estonian	1; February	1; G	1; GA	1; GG	1; Genome	1; However	1; In	1; Journal	1; MDR1	1; METHODS:	1; May	1; Morphine	1; Most	1; Nevertheless	1; October	1; Opioid-related	1; Original	1; P-glycoprotein	1; P=0.0002).The	1; PDE-5	1; Pharmacogenomics	1; RD	5; RESULTS:	1; Revision	1; SAM	5; SUBJECTS	1; Sildenafil	1; TPMT	6; TPMT-heterozygous	2; Tartu	1; The	1; This	2; University	1; While	1; a	6; activity	4; adding	1; adjustment	1; advance	1; adverse	2; affect	2; agent	1; aimed	1; allele	1; almost	1; also	1; although	1; analgesic	1; and	14; anoxic	1; are	2; article	1; as	2; associations	1; available	1; barrier	1; based	1; been	1; being	1; between	1; biochemical	1; blood-brain	1; brain	1; by	2; cGMP	1; causes	1; central	1; children	1; clinical	1; clinically	1; common	2; completely	1; comprehensive	1; confidence	1; copy	1; correction	1; current	1; data	1; deaths	1; demographic	1; depression	1; determine	1; do	1; doi:10.1038/tpj.2014.56.	1; donors	1; drugs	1; due	1; dysfunction	1; effects	1; efflux	1; encoded	1; erectile	1; evaluated	1; exploring	1; factors	1; field	1; for	4; found	1; from	2; further	1; genes	4; genetic	2; genotype	1; genotyped	1; genotypes	1; had	1; has	1; have	1; hematological	1; higher	1; homogenous	1; hospital	3; human	1; ignoring	1; implications	1; important	2; in	11; including	1; increased	1; individual	1; individuals	1; influence	3; inhibitors	1; injuries	1; interval:	1; intravenous	1; investigated	1; is	3; it	1; its	1; knowledge	1; known	1; levels	2; likely	1; little	1; marker	1; may	2; minor	1; models	1; more	1; morphine	2; most	1; multiple	3; nitric	1; not	1; number	2; odds	1; of	19; on	4; one	1; online	1; only	1; opens	1; or	1; other	4; outcomes	1; overview	1; oxide	1; p	2; pain	1; parameters	1; pathway	1; patients	1; pediatric	1; pharmacogenetic	2; pharmacological	1; pharmacometabolomic	1; phenomenon	1; phenotypes	1; polymorphism	1; polymorphisms	2; population	1; possibility	1; postoperative	1; potential	1; present	2; problem	1; prolonged	3; promising	1; pronounced	1; provides	1; publication	1; reactions	1; regression	1; related	2; relevance	1; represents	1; research	2; respiratory	1; respond	1; response	1; responsiveness	1; resulting	2; revolutionized	1; risks	1; rs9282564	1; serious	1; set	1; significant	1; significantly	1; sildenafil	1; small	1; specific	1; stay	2; stays	1; studies	1; study	2; subject	1; subjects	2; submitted	2; surgical	1; ten	1; tested	2; testing	1; than	1; that	1; the	15; their	1; therapeutic	1; therapies	1; therapy	1; therefore	1; these	1; this	2; thus	1; to	10; tonsillectomy	1; total	1; transport	1; transporter	1; treatment	2; undergoing	1; underlie	1; undertaken	1; variants	2; very	1; via	1; vivo	1; was	2; were	3; wild-type	1; with	3; x	2
+
+AID	10.1038/tpj.2014.56 [doi]	1; 10.2217/pgs.14.110 [doi]	1; 10.2217/pgs.14.84 [doi]	1; tpj201456 [pii]	1
+
+CRDT	2014/10/11 06:00	2; 2014/10/15 06:00	1
+
+DA	20141011	2; 20141014	1
+
+DEP	20141014	1
+
+DP	2014 Aug	2; 2014 Oct 14	1
+
+EDAT	2014/10/11 06:00	2; 2014/10/15 06:00	1
+
+FAU	AD:1] Department of Anesthesia, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.	3; AD:1] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Division of Bioinformatics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.	1; AD:1] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Division of Human Genetics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.	3; AD:Department of Anesthesia, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.	1; AD:Department of Psychiatric Nursing & Human Sciences, Ribeirao Preto College of Nursing, University of Sao Paulo, Ribeirao Preto, Brazil.	1; AD:Faculty of Pharmacy, University of Ljubljana, Askerceva 7, 1000 Ljubljana, Slovenia.	1; AU:Chidambaran V	1; AU:Esslinger H	1; AU:Karas-Kuzelicki N	1; AU:Lacchini R	1; AU:Martin LJ	1; AU:McAuliffe J	1; AU:Meller J	1; AU:Metspalu A	1; AU:Mlinaric-Rascan I	1; AU:Sadhasivam S	1; AU:Smid A	1; AU:Tamm R	1; AU:Tanus-Santos JE	1; AU:Zhang K	1; AU:Zhang X	1; AUID:ORCID: 0000000179131932	1; FAU:Chidambaran, V	1; FAU:Esslinger, H	1; FAU:Karas-Kuzelicki, Natasa	1; FAU:Lacchini, Riccardo	1; FAU:Martin, L J	1; FAU:McAuliffe, J	1; FAU:Meller, J	1; FAU:Metspalu, Andres	1; FAU:Mlinaric-Rascan, Irena	1; FAU:Sadhasivam, S	1; FAU:Smid, Alenka	1; FAU:Tamm, Riin	1; FAU:Tanus-Santos, Jose E	1; FAU:Zhang, K	1; FAU:Zhang, X	1
+
+IP	11	2
+
+IS	1462-2416 (Linking)	2; 1470-269X (Linking)	1; 1473-1150 (Electronic)	1; 1744-8042 (Electronic)	2
+
+JID	100897350	2; 101083949	1
+
+JT	Pharmacogenomics	2; The pharmacogenomics journal	1
+
+LA	ENG	1; eng	2
+
+LID	10.1038/tpj.2014.56 [doi]	1; 10.2217/pgs.14.110 [doi]	1; 10.2217/pgs.14.84 [doi]	1
+
+LR	20141015	1
+
+MHDA	2014/10/11 06:00	2; 2014/10/15 06:00	1
+
+OT	6-mercaptopurine	1; ALL	1; PDE-5 inhibitors	1; S-adenosyl methionine	1; erectile dysfunction	1; pharmacogenetics	2; pharmacogenomics	1; sildenafil	1; thiopurine-S-methyltransferase	1
+
+OTO	NOTNLM	2
+
+OWN	NLM	3
+
+PG	1437-49	1; 1519-38	1
+
+PHST	2014/06/16 [received]	1; 2014/08/18 [revised]	1; 2014/08/21 [accepted]	1
+
+PL	England	2
+
+PMID	25303295	1; 25303302	1; 25311385	1
+
+PST	aheadofprint	1; ppublish	2
+
+PT	JOURNAL ARTICLE	1; Journal Article	2
+
+SB	IM	2
+
+SO	Pharmacogenomics J. 2014 Oct 14. doi: 10.1038/tpj.2014.56.	1; Pharmacogenomics. 2014 Aug;15(11):1437-49. doi: 10.2217/pgs.14.84.	1; Pharmacogenomics. 2014 Aug;15(11):1519-38. doi: 10.2217/pgs.14.110.	1
+
+STAT	In-Data-Review	2; Publisher	1
+
+TA	Pharmacogenomics	2; Pharmacogenomics J	1
+
+TI	From pharmacogenetics to pharmacometabolomics: SAM modulates TPMT activity.	1; Opioid-induced respiratory depression: ABCB1 transporter pharmacogenetics.	1; Pharmacogenetics of erectile dysfunction: navigating into uncharted waters.	1
+
+VI	15	2
+

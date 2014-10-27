@@ -11,10 +11,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by andrew on 21/10/14.
@@ -78,15 +75,19 @@ public class WordHistogram extends ValueHistogram implements Writable {
     }
 
     public String toString() {
-
         StringBuilder sb = new StringBuilder();
-        Iterator<Map.Entry<Object,Object>> iter = getReportItems().entrySet().iterator();
+        TreeMap<Object, Object> items = getReportItems();
+        Iterator<Map.Entry<Object,Object>> iter = items.entrySet().iterator();
 
         while (iter.hasNext()) {
             Map.Entry<Object,Object> en =  iter.next();
             Object val = en.getKey();
             Long count = (Long) en.getValue();
-            sb.append(val).append("\t").append(count.longValue()).append("; ");
+            sb.append(val).append("\t").append(count.longValue());
+            if(iter.hasNext()){
+                //We don't want to append this to the final entry
+                sb.append("; ");
+            }
         }
         return sb.append("\n").toString();
     }

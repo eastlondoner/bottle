@@ -6,6 +6,9 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by Andrew on 24/10/2014.
  */
@@ -53,5 +56,20 @@ public class TestMedlineTokenizer {
                 addProperty("SO", "Pharmacogenomics J. 2014 Oct 14. doi: 10.1038/tpj.2014.56.").build());
         Assert.assertEquals("Check total number of fields", 31, totalCount);
         Assert.assertEquals("Check number of FAU fields", 8, fauCount);
+    }
+
+    @Test
+    public void readInAndOutAgain(){
+        String example1 = MedlineExampleStrings.getExamplesAsArray()[1];
+        MedlineTokenizer tokenizer = new MedlineTokenizer(example1);
+        List<MedlineField> fields = new LinkedList<>();
+        while (tokenizer.hasNext()) {
+            fields.add(tokenizer.next());
+        }
+        StringBuilder sb = new StringBuilder();
+        for (MedlineField field : fields) {
+            sb.append(field.toString());
+        }
+        Assert.assertEquals("PMID- "+example1, sb.append("\n").toString());
     }
 }

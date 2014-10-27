@@ -10,12 +10,14 @@ public class MedlineFieldDefinition {
     private final Set<String> otherKeys;
     private final String primaryKey;
     public final FieldType type;
+    private final int generatedFieldSize;
 
 
-    public MedlineFieldDefinition(String primaryKey, Set<String> otherKeys, @Nonnull FieldType type){
+    public MedlineFieldDefinition(String primaryKey, Set<String> otherKeys, @Nonnull FieldType type, int generatedFieldSize){
         this.primaryKey = primaryKey;
         this.otherKeys = otherKeys;
         this.type = type;
+        this.generatedFieldSize = generatedFieldSize;
         if(!MedlineFieldDefinitions.addField(this)){
             throw new IllegalStateException("Cannot have two medline fields with the same key");
         }
@@ -27,6 +29,10 @@ public class MedlineFieldDefinition {
 
     public boolean matchesOtherFields(String fieldKey){
         return otherKeys.contains(fieldKey);
+    }
+
+    public int getGeneratedFieldSize() {
+        return generatedFieldSize;
     }
 
     public static enum FieldType {
