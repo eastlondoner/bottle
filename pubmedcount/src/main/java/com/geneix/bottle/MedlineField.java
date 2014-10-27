@@ -6,6 +6,7 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class MedlineField implements Writable {
             return this;
         }
 
-        public Builder setType(MedlineFieldDefinition.FieldType type) {
+        public Builder setType(@Nonnull MedlineFieldDefinition.FieldType type) {
             if (this.type != null) {
                 throw new IllegalStateException("Cannot set the field type multiple times");
             }
