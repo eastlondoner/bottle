@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="geneix">
+  <template name="test" value="test" toReformat="false" toShortenFQNames="true">
+    <context />
+  </template>
+  <template name="logger" value="private final static Logger LOG = Logger.getLogger($CLASS_NAME$.class);$END$" description="Creates static logger" toReformat="false" toShortenFQNames="true">
+    <variable name="CLASS_NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_CODE" value="true" />
+      <option name="JAVA_STATEMENT" value="true" />
+      <option name="JAVA_EXPRESSION" value="true" />
+      <option name="JAVA_DECLARATION" value="true" />
+      <option name="JAVA_COMMENT" value="false" />
+      <option name="JAVA_STRING" value="false" />
+      <option name="COMPLETION" value="true" />
+    </context>
+  </template>
+</templateSet>
+
