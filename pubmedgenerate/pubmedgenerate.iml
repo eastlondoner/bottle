@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="Bottle" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
@@ -78,11 +80,12 @@
     <orderEntry type="library" exported="" name="Gradle: hadoop-yarn-api-2.5.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: jersey-guice-1.9" level="project" />
     <orderEntry type="library" exported="" name="Gradle: hadoop-yarn-common-2.5.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: netty-3.6.2.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit-4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: hamcrest-core-1.3" level="project" />
     <orderEntry type="module" module-name="pubmedcount" exported="" />
     <orderEntry type="library" scope="TEST" name="Gradle: hamcrest-all-1.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: zookeeper-3.4.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: netty-3.7.0.Final" level="project" />
   </component>
 </module>
 
