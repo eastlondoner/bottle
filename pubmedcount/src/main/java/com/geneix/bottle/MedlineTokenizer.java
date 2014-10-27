@@ -47,6 +47,11 @@ public class MedlineTokenizer {
         MedlineFieldDefinition definition = MedlineFieldDefinitions.getDefinition(primaryKey);
         MedlineField.Builder fieldBuilder = MedlineField.builder(primaryKey);
 
+        //Set the type
+        if(definition != null) {
+            fieldBuilder.setType(definition.type);
+        }
+
         String currentKey = primaryKey;
 
         while (++position < lines.length){

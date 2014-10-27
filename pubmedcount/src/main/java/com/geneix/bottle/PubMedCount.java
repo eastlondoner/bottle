@@ -60,8 +60,8 @@ public class PubMedCount {
     }
 
     private static void addMappers(Job job) throws IOException {
-        ChainMapper.addMapper(job, MapMedlineToFields.class, LongWritable.class, Text.class, Text.class, Text.class, new Configuration(false));
-        ChainMapper.addMapper(job, FieldToHistogram.class, Text.class, Text.class, Text.class, WordHistogram.class, new Configuration(false));
+        ChainMapper.addMapper(job, MapMedlineToFields.class, LongWritable.class, Text.class, Text.class, MedlineField.class, new Configuration(false));
+        ChainMapper.addMapper(job, FieldToHistogram.class, Text.class, MedlineField.class, Text.class, WordHistogram.class, new Configuration(false));
         //ChainMapper.addMapper(job, MapWordCountHistogramToOut.class, Text.class, WordHistogram.class, Text.class, Text.class, new Configuration(false));
     }
 

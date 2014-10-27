@@ -48,13 +48,17 @@ public class MRTestPubMedCount {
                     " confidence interval: 2.1-10.8, P=0.0002).The Pharmacogenomics Journal advance" +
                     " online publication, 14 October 2014; doi:10.1038/tpj.2014.56.").build());
     MapDriver<LongWritable, Text, Text, MedlineField> mapMedlineToFieldsDriver;
-    ReduceDriver<Text, WordHistogram, Text, WordHistogram> reduceDriver;
+
     MapReduceDriver<LongWritable, Text, Text, IntWritable, Text, IntWritable> mapReduceDriver;
 
     private static <X, Y> void logResults(List<Pair<X, Y>> results) {
         for (Pair<?, ?> result : results) {
             LOG.info(String.format("KEY: %s; VALUE:%s;", result.getFirst(), result.getSecond()));
         }
+    }
+
+    private static ReduceDriver<Text, WordHistogram, Text, WordHistogram> getReduceDriver(){
+        return  ReduceDriver.newReduceDriver(new PubMedCount.WordHistogramCombiner());
     }
 
     private static MapDriver<Text, MedlineField, Text, WordHistogram> getFieldToHistogramDriver() {
@@ -64,9 +68,7 @@ public class MRTestPubMedCount {
     @Before
     public void setUp() {
         MapMedlineToFields medlineToFields = new MapMedlineToFields();
-        PubMedCount.WordHistogramCombiner reducer = new PubMedCount.WordHistogramCombiner();
         mapMedlineToFieldsDriver = MapDriver.newMapDriver(medlineToFields);
-        reduceDriver = ReduceDriver.newReduceDriver(reducer);
     }
 
     @Test
@@ -216,13 +218,53 @@ public class MRTestPubMedCount {
     }
 
     @Test
-    public void testReducer() {
-        List<IntWritable> values = new ArrayList<IntWritable>();
-        values.add(new IntWritable(1));
-        values.add(new IntWritable(1));
-        //reduceDriver.withInput(new Text("6"), values);
-        //reduceDriver.withOutput(new Text("6"), new IntWritable(2));
-        //reduceDriver.runTest();
+    public void testReducer() throws IOException {
+        //Simple additive tests
+        List<WordHistogram> values = new ArrayList<>();
+        values.add(new WordHistogram().withValue("A"));
+        values.add(new WordHistogram().withValue("A"));
+        getReduceDriver()
+                .withInput(new Text("Combining Simple Histograms"), values)
+                .withOutput(new Text("Combining Simple Histograms"), new WordHistogram().withValue("A\t2"))
+                .runTest();
+
+        values = new ArrayList<>();
+        values.add(new WordHistogram().withValue("A"));
+        values.add(new WordHistogram().withValue("A\t2"));
+        getReduceDriver()
+                .withInput(new Text("Combining Simple Histograms"), values)
+                .withOutput(new Text("Combining Simple Histograms"), new WordHistogram().withValue("A\t3"))
+                .runTest();
+
+        values = new ArrayList<>();
+        values.add(new WordHistogram().withValue("A"));
+        values.add(new WordHistogram().withValue("B\t2"));
+        getReduceDriver()
+                .withInput(new Text("Combining Simple Histograms"), values)
+                .withOutput(new Text("Combining Simple Histograms"), new WordHistogram().withValue("A").withValue("B\t2"))
+                .runTest();
+
+        values = new ArrayList<>();
+        values.add(new WordHistogram().withValue("A"));
+        values.add(new WordHistogram().withValue("A").withValue("B"));
+        values.add(new WordHistogram().withValue("A").withValue("B").withValue("C"));
+        getReduceDriver()
+                .withInput(new Text("Combining Simple Histograms"), values)
+                .withOutput(new Text("Combining Simple Histograms"), new WordHistogram().withValue("A\t3").withValue("B\t2").withValue("C\t1"))
+                .runTest();
+
+
+        //Quick test case sensitivity
+        values = new ArrayList<>();
+        values.add(new WordHistogram().withValue("A"));
+        values.add(new WordHistogram().withValue("a").withValue("b"));
+        values.add(new WordHistogram().withValue("A").withValue("B").withValue("C"));
+        values.add(new WordHistogram().withValue("a").withValue("b").withValue("c").withValue("d"));
+        getReduceDriver()
+                .withInput(new Text("Combining Simple Histograms"), values)
+                .withOutput(new Text("Combining Simple Histograms"), new WordHistogram().withValue("a\t2").withValue("A\t2").withValue("b\t2").withValue("B").withValue("c").withValue("C\t1").withValue("d"))
+                .runTest();
+
     }
 
 }

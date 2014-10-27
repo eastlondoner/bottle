@@ -1,5 +1,6 @@
 package com.geneix.bottle;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public class MedlineFieldDefinition {
     public final FieldType type;
 
 
-    public MedlineFieldDefinition(String primaryKey, Set<String> otherKeys, FieldType type){
+    public MedlineFieldDefinition(String primaryKey, Set<String> otherKeys, @Nonnull FieldType type){
         this.primaryKey = primaryKey;
         this.otherKeys = otherKeys;
         this.type = type;
