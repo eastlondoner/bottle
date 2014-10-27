@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/pubmedcount" />
+            <option value="$PROJECT_DIR$/pubmedgenerate" />
             <option value="$PROJECT_DIR$/wordcount" />
           </set>
         </option>
