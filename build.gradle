@@ -19,11 +19,22 @@ subprojects {
 }
 
 dependencies {
-   // compile project(':wordcount')
-   // compile project(':pubmedcount')
+   compile project(':wordcount')
+   compile project(':pubmedcount')
 }
 
-jar {
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': project.name + ' Example',
+                    'Implementation-Version': '1',
+                    'Built-By': System.getProperty('user.name'),
+                    'Built-Date': new Date(),
+                    'Built-JDK': System.getProperty('java.version'),
+                    'Main-Class': 'com.geneix.bottle.MapReduceRunner'
+        }
+
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
@@ -32,21 +43,9 @@ jar {
             it.isDirectory() ? it : zipTree(it)
         }
     }
-    manifest {
-        attributes 'Implementation-Title': 'bottle',
-                'Implementation-Version': '0.1.0',
-                'Built-By': System.getProperty('user.name'),
-                'Built-Date': new Date(),
-                'Built-JDK': System.getProperty('java.version'),
-                'Main-Class': 'com.geneix.bottle.MapReduceRunner'
 
-    }
+    baseName = project.name + '-all'
+    destinationDir = file('jars/')
 
-    uploadArchives {
-        repositories {
-            flatDir {
-                dirs 'jars'
-            }
-        }
-    }
+    with jar
 }

@@ -3,3 +3,14 @@ version = '1.0'
 task getHomeDir << {
     println gradle.gradleHomeDir
 }
+
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'wordcount',
+                'Implementation-Version': '0.1.0',
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version')
+    }
+}
