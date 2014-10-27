@@ -24,10 +24,10 @@ public class MedlineFieldDefinitions {
     //TODO: REMOVE STATIC INITIALIZER
     //Load the data from somewhere else
     static {
-        new MedlineFieldDefinition("FAU", new TreeSet<String>(Arrays.asList("AU", "AUID", "AD")), SINGLE_OBJECT_VALUE);
-        new MedlineFieldDefinition("PHST", new TreeSet<String>(Arrays.asList("PHST")), ARRAY_TEXT_VALUES);
-        new MedlineFieldDefinition("IS", new TreeSet<String>(Arrays.asList("IS")), ARRAY_TEXT_VALUES);
-        new MedlineFieldDefinition("AID", new TreeSet<String>(Arrays.asList("AID")), ARRAY_TEXT_VALUES);
-        new MedlineFieldDefinition("AB", new TreeSet<String>(), WORDS);
+        new MedlineFieldDefinition("FAU", new TreeSet<String>(Arrays.asList("AU", "AUID", "AD")), SINGLE_OBJECT_VALUE, 1);
+        new MedlineFieldDefinition("PHST", new TreeSet<String>(Arrays.asList("PHST")), ARRAY_TEXT_VALUES, 1);
+        new MedlineFieldDefinition("IS", new TreeSet<String>(Arrays.asList("IS")), ARRAY_TEXT_VALUES, 1);
+        new MedlineFieldDefinition("AID", new TreeSet<String>(Arrays.asList("AID")), ARRAY_TEXT_VALUES, 1);
+        new MedlineFieldDefinition("AB", new TreeSet<String>(), WORDS, 200);
     }
 }
