@@ -2,12 +2,8 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/out" />
-    </content>
+    <content url="file://$MODULE_DIR$" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Node.js v0.10.25 Core Modules" level="application" />
-    <orderEntry type="library" name="pubmedslurp node_modules" level="project" />
   </component>
 </module>
 
