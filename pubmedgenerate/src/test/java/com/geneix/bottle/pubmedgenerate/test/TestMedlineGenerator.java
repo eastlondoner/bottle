@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -64,30 +65,35 @@ public class TestMedlineGenerator {
     public void checkGeneratorOutputParses() throws IOException {
         MedlineGenerator generator = getMedlineGenerator();
         File file = new File("testfile.txt");
-        OutputStream out = new FileOutputStream(file);
-
-        int generatedCount = 1000;
-
         try {
-            generator.generateEntries(out, generatedCount);
-        } finally {
-            out.close();
-        }
+            OutputStream out = new FileOutputStream(file);
 
-        Scanner in = new Scanner(file).useDelimiter(PubMedCount.getDelimiter());
-        int inCount = 0;
-        try{
-            while (in.hasNext()){
-                String entry = in.next();
-                if(MapMedlineToFields.isValidEntry(entry)){
-                    MedlineTokenizer tokenizer = new MedlineTokenizer(entry);
-                    parseEntryWithAssertions(tokenizer, false);
-                    inCount++;
-                }
+
+            int generatedCount = 1000;
+
+            try {
+                generator.generateEntries(out, generatedCount);
+            } finally {
+                out.close();
             }
+
+            Scanner in = new Scanner(file).useDelimiter(PubMedCount.getDelimiter());
+            int inCount = 0;
+            try {
+                while (in.hasNext()) {
+                    String entry = in.next();
+                    if (MapMedlineToFields.isValidEntry(entry)) {
+                        MedlineTokenizer tokenizer = new MedlineTokenizer(entry);
+                        parseEntryWithAssertions(tokenizer, false);
+                        inCount++;
+                    }
+                }
+            } finally {
+                in.close();
+            }
+            Assert.assertEquals(generatedCount, inCount);
         } finally {
-            in.close();
+            Files.delete(file.toPath());
         }
-        Assert.assertEquals(generatedCount, inCount);
     }
 }
