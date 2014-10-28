@@ -1,9 +1,12 @@
 package com.geneix.bottle;
 
+import com.google.common.base.Charsets;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -64,6 +67,15 @@ public class MedlineGenerator {
 
             fieldModels.put(fieldName, fieldModel);
         }
+    }
+
+    public void generateEntries(OutputStream out, int count) throws IOException {
+        int i = 0;
+        for(; i< count;i++){
+            out.write("\n".getBytes(Charsets.UTF_8));
+            out.write(generateEntry().getBytes(Charsets.UTF_8));
+        }
+        out.flush();
     }
 
     public String generateEntry() {
