@@ -12,11 +12,15 @@ public class MapReduceRunner {
         String classToRun = args[0];
 
         String[] argsToPass;
+
+        //Sometimes hadoop passes in the name of this class, sometimes it doesnt, I don't entirely understand why..
         if(classToRun.contains("MapReduceRunner")){
+            classToRun = args[1];
             argsToPass = Arrays.copyOfRange(args,1, args.length);
         } else {
             argsToPass = args;
         }
+
         Method main = Class.forName(classToRun, false, null).getMethod("main", String[].class);
         main.invoke(null, (Object)argsToPass);
     }
