@@ -52,10 +52,8 @@ public class DataGenerator<GEN extends DataGenerator.DataGeneratorInputFormat> {
 
         job.setNumReduceTasks(0);
         job.setInputFormatClass(gen.getClass());
-
-        Pair<?,?> pair = gen.getRecordReader().generateRecord();
-        job.setOutputKeyClass(pair.getKey().getClass());
-        job.setOutputValueClass(pair.getValue().getClass());
+        job.setOutputKeyClass(gen.getKeyClass());
+        job.setOutputValueClass(gen.getValueClass());
     }
 
     public static abstract class DataGeneratorRecordReader<KEYIN, VALUEIN> extends
@@ -161,6 +159,9 @@ public class DataGenerator<GEN extends DataGenerator.DataGeneratorInputFormat> {
             rr.initialize(split, context);
             return rr;
         }
+
+        public abstract Class<KEYIN> getKeyClass();
+        public abstract Class<VALUEIN> getValueClass();
 
         /**
          * This class is very empty.

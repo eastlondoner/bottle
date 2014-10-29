@@ -69,6 +69,16 @@ public class GeneratePubMedData {
                 }
             };
         }
+
+        @Override
+        public Class<NullWritable> getKeyClass() {
+            return NullWritable.class;
+        }
+
+        @Override
+        public Class<Text> getValueClass() {
+            return Text.class;
+        }
     }
 
 
