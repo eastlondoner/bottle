@@ -6,6 +6,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapred.ClusterStatus;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -34,9 +37,9 @@ public class DataGenerator<GEN extends DataGenerator.DataGeneratorInputFormat> {
     }
 
     public void configure(Job job, int approxTotalRecords) throws IOException, InterruptedException {
-        ClusterMetrics clusterStatus = job.getCluster().getClusterStatus();
-        int nodes = clusterStatus.getTaskTrackerCount();
-        int mapRedSlots = clusterStatus.getMapSlotCapacity();
+        ClusterStatus clusterStatus = new JobClient(new JobConf()).getClusterStatus();
+        int nodes = clusterStatus.getTaskTrackers();
+        int mapRedSlots = clusterStatus.getMaxMapTasks();
 
         int recordsPerSlot = Math.round(approxTotalRecords / mapRedSlots);
 
