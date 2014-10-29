@@ -37,7 +37,12 @@ public class PubMedCount {
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
 
+
         Job job = Job.getInstance(conf, "pubmedcount");
+
+        ClusterMetrics metrics = job.getCluster().getClusterStatus();
+        int nodes = metrics.getTaskTrackerCount();
+        int mapSlots = metrics.getMapSlotCapacity();
 
         job.setJarByClass(PubMedCount.class);
         job.setOutputKeyClass(Text.class);
