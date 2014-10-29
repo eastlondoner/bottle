@@ -21,7 +21,7 @@ public class MapReduceRunner {
             argsToPass = args;
         }
 
-        Method main = Class.forName(classToRun, false, null).getMethod("main", String[].class);
+        Method main = Class.forName(classToRun).getMethod("main", String[].class);
         main.invoke(null, (Object)argsToPass);
     }
 }
