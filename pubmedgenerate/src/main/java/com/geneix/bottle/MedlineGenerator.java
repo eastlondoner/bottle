@@ -46,6 +46,9 @@ public class MedlineGenerator {
                     SimpleFieldModel model = new SimpleFieldModel(fieldName, fieldType);
                     for (String histogramDataPoint : histogramData) {
                         String[] data = histogramDataPoint.split("\\t");
+                        if(data.length != 2){
+                            throw new IllegalStateException(String.format("Cannot parse word: '%s'", histogramDataPoint));
+                        }
                         model.addValue(Long.parseLong(data[1]), data[0]);
                     }
                     fieldModel = model;

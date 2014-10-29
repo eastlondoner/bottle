@@ -79,7 +79,7 @@ public class PubMedCount {
             String[] words;
             switch (value.getType()) {
                 case WORDS:
-                    words = value.getValuesAsString().split("[,|.|!|;|;|(|)|\\[|\\]]*\\s+[,|.|!|;|;|(|)|\\[|\\]]*");
+                    words = value.getValuesAsString().split("[-|\"|'|,|.|!|;|;|(|)|\\[|\\]]*\\s+[-|\"|'|,|.|!|;|;|(|)|\\[|\\]]*");
                     break;
                 case SINGLE_TEXT_VALUE:
                     words = new String[]{value.getValuesAsString()};
@@ -108,6 +108,7 @@ public class PubMedCount {
             WordHistogram outValue = new WordHistogram();
             for (String word : words) {
                 //LOG.info(String.format("Histogramming KEY: %s; WORD: %s", key, word));
+                word.replaceAll("\\t","");
                 outValue.addNextValue(word);
             }
             if(LOG.isInfoEnabled()) {
