@@ -1,6 +1,7 @@
 package com.geneix.bottle;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Created by andrew on 20/10/14.
@@ -8,7 +9,15 @@ import java.lang.reflect.Method;
 public class MapReduceRunner {
     public static void main(String[] args) throws Exception {
 
-        Method main = Class.forName(args[0], false, null).getMethod("main", String[].class);
-        main.invoke(null, (Object)args);
+        String classToRun = args[0];
+
+        String[] argsToPass;
+        if(classToRun.contains("MapReduceRunner")){
+            argsToPass = Arrays.copyOfRange(args,1, args.length);
+        } else {
+            argsToPass = args;
+        }
+        Method main = Class.forName(classToRun, false, null).getMethod("main", String[].class);
+        main.invoke(null, (Object)argsToPass);
     }
 }
