@@ -1,7 +1,9 @@
 package com.geneix.bottle;
 
 import com.google.common.base.Charsets;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,9 +30,13 @@ public class MedlineGenerator {
             if (fieldData.length() < 4) {
                 continue;
             }
-            int firstTabIndex = fieldData.indexOf('\t');
-            String fieldName = fieldData.substring(0, firstTabIndex);
-            String[] histogramData = fieldData.substring(firstTabIndex + 1).split("; ");
+            final Scanner scanner = new Scanner(fieldData);
+            scanner.useDelimiter("\\t");
+            String fieldName = scanner.next();
+            scanner.useDelimiter("; ");
+            scanner.findInLine("\t");
+
+
 
             MedlineFieldDefinition defn = MedlineFieldDefinitions.getDefinition(fieldName);
 
@@ -38,27 +44,54 @@ public class MedlineGenerator {
 
             BaseFieldModel fieldModel = null;
 
+            Iterable<Pair<Long,String>> scannerIterator = new Iterable<Pair<Long,String>>() {
+                @Override
+                public Iterator<Pair<Long, String>> iterator() {
+                    return new Iterator<Pair<Long, String>>() {
+                        @Override
+                        public boolean hasNext() {
+                            return scanner.hasNext();
+                        }
+
+                        @Override
+                        public Pair<Long,String> next() {
+                            String value = "";
+                            String[] data;
+                            do {
+                                String next = scanner.next();
+                                data= next.split("\\t");
+                                if (data.length > 2) {
+                                    throw new IllegalStateException(String.format("Cannot parse word: '%s'", value+next));
+                                }
+                                value+=data[0];
+                            } while (data.length < 2);
+                            return new Pair<>(Long.parseLong(data[1]), value);
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new NotImplementedException();
+                        }
+                    };
+                }
+            };
+
             switch (fieldType) {
 
                 case ARRAY_TEXT_VALUES:
                 case SINGLE_TEXT_VALUE:
                 case WORDS:
                     SimpleFieldModel model = new SimpleFieldModel(fieldName, fieldType);
-                    for (String histogramDataPoint : histogramData) {
-                        String[] data = histogramDataPoint.split("\\t");
-                        if(data.length != 2){
-                            throw new IllegalStateException(String.format("Cannot parse word: '%s'", histogramDataPoint));
-                        }
-                        model.addValue(Long.parseLong(data[1]), data[0]);
+                    for (Pair<Long, String> pair : scannerIterator) {
+                        model.addValue(pair.getKey(), pair.getValue());
                     }
                     fieldModel = model;
                     break;
                 case SINGLE_OBJECT_VALUE:
                     ObjectFieldModel objectModel = new ObjectFieldModel(fieldName);
-                    for (String histogramDataPoint : histogramData) {
-                        String[] data = histogramDataPoint.split("\\t");
-                        long weight = Long.parseLong(data[1]);
-                        String propertyData = data[0];
+                    for (Pair<Long, String> pair : scannerIterator) {
+                        long weight = pair.getKey();
+                        String propertyData = pair.getValue();
                         int firstColonIndex = propertyData.indexOf(':');
                         String propertyName = propertyData.substring(0, firstColonIndex);
                         String propertyValue = propertyData.substring(firstColonIndex);
