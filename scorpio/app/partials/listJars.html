@@ -1,0 +1,21 @@
+<ol>
+    <li ng-repeat="jar in jars"
+        ng-click="jarSelected(jar.id)"
+        class="column-entry">
+        {{ jar.name }}
+    </li>
+</ol>
+<ol>
+    <li>
+        <a ng-click="linkJarToContainer()">Link to container</a>
+    </li>
+    <li>
+        <a ng-click="uploadJar()">Upload JAR file</a>
+    </li>
+    <li>
+        <a ng-click="downloadJar()">Download JAR file</a>
+    </li>
+    <li>
+        <a ng-click="deleteJar()">Delete JAR file</a>
+    </li>
+</ol>

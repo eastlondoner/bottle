@@ -1,0 +1,22 @@
+
+<div class="scorpio-container"  ng-controller="ScorpioBaseController">
+    <div class="three-column container">
+        <div class="first column">
+            <ol>
+                <li ng-click="listContainers()">
+                    Containers
+                </li>
+                <li ng-click="listJars()">
+                    Jars
+                </li>
+                <li ng-click="listJobs()">
+                    Jobs
+                </li>
+            </ol>
+        </div>
+        <div class="second column" ui-view="secondList">
+        </div>
+        <div class="third column" ui-view="thirdList">
+        </div>
+    </div>
+</div>

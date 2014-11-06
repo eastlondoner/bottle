@@ -1,0 +1,11 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-body">
+        {{ message }}
+    </div>
+    <div class="modal-footer">
+      <button type="button" ng-click="confirm()" class="btn btn-success btn-block {{ buttonColor }} ">{{ confirmLabel || 'Confirm'}}</button>
+      <button type="button" ng-click="cancel()" class="btn btn-cancel btn-block" data-dismiss="modal">{{ cancelLabel || 'Cancel'}}</button>
+    </div>
+  </div>
+</div>

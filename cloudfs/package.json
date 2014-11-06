@@ -1,0 +1,13 @@
+{
+    "name": "cloudfs",
+    "version": "0.0.1-dev",
+    "private": true,
+    "scripts": {
+    },
+    "main" : "cloudfilestream.js",
+    "dependencies": {
+        "pkgcloud": "*",
+        "stream-stream": "*",
+        "underscore": "*"
+    }
+}

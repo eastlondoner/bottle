@@ -1,0 +1,38 @@
+@nav_bar_height: 90px;
+
+body {
+  background: #ffffff;
+  padding-top: @nav_bar_height;
+  position: relative;
+}
+
+.topbar {
+
+  height: @nav_bar_height;
+  max-height: @nav_bar_height;
+  align-items: center;
+  background-color: #dcdcdc;
+
+  p {
+    margin: 0 0px 0 10px;
+    font-size: 40px;
+  }
+
+  p.logo {
+    border-top: transparent 2px;
+    color: lightskyblue;
+    font-weight: normal;
+    font-family: HelveticaNeue-CondensedBold, Helvetica, sans-serif ;
+  }
+
+
+  p.menu {
+    background: transparent url("images/icon-menu.png") no-repeat center;
+    background-size: contain;
+    width: 40px;
+    text-indent: -9999px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+
+}

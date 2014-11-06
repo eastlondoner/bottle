@@ -1,0 +1,55 @@
+.login-form-container {
+  margin-top: 100px;
+
+  .login-form {
+    margin: 0 auto;
+    text-align: center;
+    vertical-align: middle;
+    width: 330px;
+
+    h2 {
+      text-indent: -9999px;
+      height: 41px;
+      background: transparent url("images/logo.png") center center no-repeat;
+      background-size: contain;
+      margin-bottom: 50px;
+    }
+
+    .reset-password {
+      color: @text-color;
+    }
+  }
+}
+
+.patient-input-container {
+   margin-top: 200px;
+
+  .patient-input-form {
+     margin: 0 auto;
+     text-align: center;
+     vertical-align: middle;
+     width: 270px;
+
+     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+         /* display: none; <- Crashes Chrome on hover */
+         -webkit-appearance: none;
+         margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+     }
+  }
+}
+
+.footer-disclaimer {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  width: 100%;
+
+  .text {
+    color: #999;
+    font-size: 11px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+}

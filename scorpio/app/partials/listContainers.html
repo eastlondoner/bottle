@@ -1,0 +1,18 @@
+<ol>
+    <li ng-repeat="container in containers"
+        ng-click="listDataFiles(container.name)"
+        class="column-entry">
+        {{ container.name }}
+    </li>
+</ol>
+<ol>
+    <li>
+        <a ng-click="linkContainerToJar()">Link to JAR</a>
+    </li>
+    <li>
+        <a ng-click="createContanier()">Add container</a>
+    </li>
+    <li>
+        <a ng-click="deleteContainer()">Delete container</a>
+    </li>
+</ol>

@@ -1,0 +1,32 @@
+{
+    "name": "Scorpio",
+    "version": "0.0.1-dev",
+    "description": "",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+    },
+    "author": "Andrew Jefferson <andrew@geneix.com>",
+    "readmeFilename": "README.md",
+    "devDependencies": {
+    },
+    "dependencies": {
+        "busboy": "~0.2.9",
+        "bower": "~1.2.6",
+        "grunt": "~0.4.1",
+        "grunt-concurrent": "~1.0.0",
+        "grunt-contrib-watch": "~0.5.3",
+        "grunt-contrib-less": "~0.7.0",
+        "grunt-bower-requirejs": "~0.7.1",
+        "grunt-bg-shell": "~2.3.0",
+        "grunt-exec": "~0.4.2",
+        "express": "~3.4.2",
+        "underscore": "*",
+        "moment": "~2.3.1",
+        "async": "~0.2.10",
+        "forever": "~0.10.11",
+        "optimist": "~0.6.0",
+        "cloudfs": "file:../cloudfs"
+    }
+}

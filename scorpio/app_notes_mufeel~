@@ -1,0 +1,34 @@
+how is the app structured
+
+angular js : 
+nodejs : for the server side
+underscore
+require.js
+
+main entry point: bower_components/requirejs/require.js
+
+
+ANGULAR JS
+
+1. Used angular-seed project for boiler plate AngularJS structure
+
+https://github.com/angular/angular-seed
+
+views
+models
+scope
+two-way databinding
+controllers
+routing
+directives
+services
+
+2. NodeJS
+
+1. You have to start the nodejs script from the terminal and leave the connection open.
+2. Navigate to the project source, node server.js
+3. This script serves as a database wrapper for the application and has many get/post functions\
+  Example usage: http://interact.local:8000/api/patient/1
+
+4. App is the main folder
+It is running AngularJS
