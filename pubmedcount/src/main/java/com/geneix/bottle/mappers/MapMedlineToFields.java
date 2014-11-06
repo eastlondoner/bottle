@@ -39,7 +39,7 @@ public class MapMedlineToFields extends Mapper<LongWritable, Text, Text, Medline
         }
     }
 
-    private boolean isValidEntry(String entry) throws IOException {
+    public static boolean isValidEntry(String entry) throws IOException {
         String shouldBePMID = entry.substring(0, entry.indexOf("\n")).trim();
 
         boolean isValid = numbers.matcher(shouldBePMID).matches();

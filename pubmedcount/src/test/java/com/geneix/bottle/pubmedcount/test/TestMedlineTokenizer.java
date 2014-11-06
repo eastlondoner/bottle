@@ -1,6 +1,7 @@
 package com.geneix.bottle.pubmedcount.test;
 
 import com.geneix.bottle.MedlineField;
+import com.geneix.bottle.MedlineFieldDefinition;
 import com.geneix.bottle.MedlineTokenizer;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -42,6 +43,7 @@ public class TestMedlineTokenizer {
                                     .addProperty("FAU", "Sadhasivam, S")
                                     .addProperty("AU", "Sadhasivam S")
                                     .addProperty("AD", "1] Department of Anesthesia, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.")
+                                    .setType(MedlineFieldDefinition.FieldType.SINGLE_OBJECT_VALUE)
                                     .build(),
                             field
                     );

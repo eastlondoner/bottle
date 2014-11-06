@@ -178,7 +178,7 @@ public class MRTestPubMedCount {
         Text firstRealEntry = new Text(entry);
         mapMedlineToFieldsDriver.withInput(new LongWritable(), firstRealEntry);
         mapMedlineToFieldsDriver.withOutput(firstFieldIntermediateResult);
-        mapMedlineToFieldsDriver.withOutput(new Text("AB"), MedlineField.builder("AB").addProperty("AB", "Foo bar wibble").build());
+        mapMedlineToFieldsDriver.withOutput(new Text("AB"), MedlineField.builder("AB").addProperty("AB", "Foo bar wibble").setType(MedlineFieldDefinition.FieldType.WORDS).build());
         mapMedlineToFieldsDriver.runTest(false);
     }
 
@@ -214,7 +214,7 @@ public class MRTestPubMedCount {
         assertThat(results, hasItem(new Pair<>(new Text("SO"), MedlineField.builder("SO").addProperty("SO", "Pharmacogenomics J. 2014 Oct 14. doi: 10.1038/tpj.2014.56.").build())));
 
         //Check that difficult item has correct format
-        assertThat(results, hasItem(new Pair<>(new Text("FAU"), MedlineField.builder("FAU").addProperty("FAU", "Sadhasivam, S").addProperty("AU", "Sadhasivam S").addProperty("AD", "1] Department of Anesthesia, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.").build())));
+        assertThat(results, hasItem(new Pair<>(new Text("FAU"), MedlineField.builder("FAU").addProperty("FAU", "Sadhasivam, S").addProperty("AU", "Sadhasivam S").addProperty("AD", "1] Department of Anesthesia, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA [2] Department of Pediatrics, Cincinnati Children's Hospital Medical Center, Cincinnati, OH, USA.").setType(MedlineFieldDefinition.FieldType.SINGLE_OBJECT_VALUE).build())));
     }
 
     @Test
@@ -266,5 +266,4 @@ public class MRTestPubMedCount {
                 .runTest();
 
     }
-
 }
