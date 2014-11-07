@@ -323,7 +323,6 @@ var uploadSocket;
 
 function getCloudFile(options, cb) {
 
-    var eventEmitter = new events.EventEmitter();
     var config = JSON.parse(fs.readFileSync("../.config/rackspace.json"));
     var rackspace = pkgcloud.storage.createClient(_.extend(config, {
         provider: 'rackspace',
@@ -352,8 +351,6 @@ function getCloudFile(options, cb) {
             });
         cb(null, uploadSocket);
     });
-
-    return eventEmitter;
 }
 
 idsFile.on("open", function () {
