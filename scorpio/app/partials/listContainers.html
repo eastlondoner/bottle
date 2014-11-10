@@ -1,8 +1,10 @@
 <ol>
     <li ng-repeat="container in containers"
-        ng-click="listDataFiles(container.id)"
-        class="column-entry">
-        {{ container.name }}
+        ng-click="listDataFiles(container)"
+        class="column-entry"
+        toggle-selected
+        model="container">
+        <span>{{ container.name }}</span>
     </li>
 </ol>
 <ol>

@@ -1,7 +1,8 @@
 <ol>
     <li ng-repeat="file in files"
         class="column-entry"
-        ng-click="toggleSelected(file)">
+        toggle-selected
+        model="file">
         {{ file.name }}
     </li>
 </ol>
@@ -10,7 +11,7 @@
         <a ng-click="uploadDataFile()">Upload data file</a>
     </li>
     <li>
-        <a ng-click="downloadDataFile()">Download data file</a>
+        <a ng-href="/containers/{{containerId}}/download/{{selected.value.id}}" download>Download data file</a>
     </li>
     <li>
         <a ng-click="deleteDataFile()">Delete data file</a>

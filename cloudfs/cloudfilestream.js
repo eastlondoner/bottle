@@ -36,12 +36,40 @@ function CloudFileManager(config, opts) {
         return rackspaceStorage.upload(opts, wrappedCallback);
     }
 
-    this.getFileAsStream = function (fileName, containerName) {
+    this.getFileDetails = function (fileName, containerName, cb) {
+        rackspaceStorage.getFile(containerName, fileName, function (err, file) {
+            if (handleError(err, 'Error getting file')) {
+                return cb(err);
+            }
+            cb(err, file);
+        })
+    };
+
+    this.removeFile = function (fileName, containerName, cb) {
+        rackspaceStorage.removeFile(containerName, fileName, function (err, file) {
+            if (handleError(err, 'Error deleting file')) {
+                return cb(err);
+            }
+            cb(err, file);
+        });
+    };
+
+    this.getFileAsWritableStream = function (fileName, containerName) {
         var opts = {
             remote: fileName, // name of the new file
             container: containerName // this can be either the name or an instance of container
         };
         return uploadWrapper(opts); // This approach (returning a stream) doesnt take a callback
+    };
+
+    this.getFileAsReadableStream = function (fileName, containerName, cb) {
+        var opts = {
+            remote: fileName, // name of the new file
+            container: containerName // this can be either the name or an instance of container
+        };
+        return rackspaceStorage.download(opts, function(err){
+            if(handleError(err, "Error downloading file")) return cb(err);
+        })
     };
 
 // This returns a 'stream stream' to which you write readable streams
@@ -60,7 +88,7 @@ function CloudFileManager(config, opts) {
     this.getContainerFiles = function (containerName, cb) {
         rackspaceStorage.getFiles(containerName, function (err, files) {
             if (handleError(err, 'Error getting container files')) {
-                cb(err)
+                return cb(err);
             }
             cb(err, files);
         })
@@ -96,11 +124,24 @@ function CloudFileManager(config, opts) {
     };
 
     this.createContainer = function (containerName, cb) {
-        rackspaceStorage.createContainer(containerName, function (err, files) {
-            if (handleError(err, 'Error creating container')) err(err);
-            cb(err, files);
+        rackspaceStorage.createContainer(containerName, function (err, container) {
+            if (handleError(err, 'Error creating container')) return cb(err);
+            cb(err, container);
         })
-    }
+    };
+
+    this.createContainerIfNotExists = function(containerName, cb) {
+        rackspaceStorage.getContainer(containerName, function(err, container){
+            if(err){
+                return rackspaceStorage.createContainer(containerName, function (err, container) {
+                    if (handleError(err, 'Error creating container')) return cb(err);
+                    if(cb) cb(null, container);
+                })
+            }
+            cb(null, container)
+        })
+
+    };
 
 }
 module.exports = CloudFileManager;

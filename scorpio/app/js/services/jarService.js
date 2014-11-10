@@ -12,13 +12,15 @@ define(['angular', 'servicesModule', 'classes', 'Container'], function (angular,
 
                     getJars: _.partial(containerService.getFilesInContainer, JAR_CONTAINER_NAME),
 
+                    getJar: _.partial(containerService.getFileInContainer, _, JAR_CONTAINER_NAME),
+
                     uploadJar: _.partial(containerService.uploadFileToContainer, _, JAR_CONTAINER_NAME),
+
+                    deleteJar: _.partial(containerService.deleteFileInContainer, _, JAR_CONTAINER_NAME),
 
                     getJarContainer: function(){
                         return new Container({name: "JARS", id: JAR_CONTAINER_NAME});
                     }
-
-
                 };
             }
         ]);

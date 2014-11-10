@@ -1,3 +1,4 @@
+@import "mixins.less";
 @nav_bar_height: @navbar-height;
 
 body {
@@ -27,11 +28,11 @@ body {
 
 
   p.menu {
+    .clickable;
     background: transparent url("images/icon-menu.png") no-repeat center;
     background-size: contain;
     width: 40px;
     text-indent: -9999px;
-    cursor: pointer;
     margin-right: 5px;
   }
 

@@ -18,7 +18,7 @@
     "requirejs-text": "~2.0.10",
     "angular-ui-router": "~0.2.11",
     "ng-file-upload": "1.6.12",
-    "underscore-amd": "~1.5.2",
+    "underscore": "~1.7.0",
     "angular-ui-bootstrap-bower": "~0.6.0"
   }
 }

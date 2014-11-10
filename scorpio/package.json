@@ -14,6 +14,7 @@
     "dependencies": {
         "busboy": "~0.2.9",
         "bower": "~1.2.6",
+        "body-parser": "*",
         "grunt": "~0.4.1",
         "grunt-concurrent": "~1.0.0",
         "grunt-contrib-watch": "~0.5.3",
@@ -22,11 +23,13 @@
         "grunt-bg-shell": "~2.3.0",
         "grunt-exec": "~0.4.2",
         "express": "~3.4.2",
+        "express-session": "~1.9.1",
         "underscore": "*",
         "moment": "~2.3.1",
         "async": "~0.2.10",
         "forever": "~0.10.11",
         "optimist": "~0.6.0",
-        "cloudfs": "file:../cloudfs"
+        "cloudfs": "file:../cloudfs",
+        "cryptiles" : "*"
     }
 }

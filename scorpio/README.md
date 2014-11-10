@@ -7,6 +7,12 @@ Setup
 
 You'll need Node.JS installed (we use it for the build scripts, and will use it for the server parts as well). You can get it here: http://nodejs.org/ or install with Homebrew (`brew install nodejs`)
 
+You will also need the latest version of npm. An old version of npm usually comes bundled with node and can be used to bootstrap to the latest version.
+
+    npm install -g npm
+
+Then remove the old version of npm by finding the (old) npm folder and deleting it.
+
 To install the build script requirements run from the project directory:
 
     npm install
@@ -14,6 +20,30 @@ To install the build script requirements run from the project directory:
     npm install -g nodemon
     npm install -g bower
     bower install
+
+You'll need to create some configuration files before you can run the server.
+
+In the root directory you need to create a .config folder containing rackspace.json (../.config/rackspace.json).
+    {
+        "username": "YOUR_RACKSPACE_USERNAME",
+        "apiKey": "YOUR_RACKSPACE_API_KEY"
+    }
+
+In the scorpio directory you need to create a config folder containing serverConfig.json (./config/serverConfig.json).
+    {
+        "server" : {
+            "port": 8000
+        },
+        "mail": {
+            "auth": {
+                "user": "USER",
+                "pass": "PASS"
+            },
+            "host": "smpt.mailgun.org",
+            "secureConnection": true,
+            "port": 465
+        }
+    }
 
 To start the build watcher and demo server run:
 

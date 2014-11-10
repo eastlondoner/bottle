@@ -5,34 +5,35 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
      * that they have the correct patient
      */
     controllers.controller('ListDataFilesController', function ($scope, $rootScope, $state, files, iaLoadingSpinner, iaModalSheet) {
-        var containerId = $state.params.containerId;
-        var asyncData = $state.params.asyncData;
+        $scope.containerId = $state.params.containerId;
         $scope.files = files;
 
-        $scope.toggleSelected = function(file){
-            if($scope.selected == file){
-                delete $scope.selected;
-            } else {
-                $scope.selected = file;
-            }
+        $scope.selected = {value: null};
+        $scope.getSelected = function () {
+            return $scope.selected.value;
         };
 
-        $scope.uploadDataFile = function(){
+
+        $scope.uploadDataFile = function () {
             $state.go('uploadDataFile');
         };
 
-        $scope.downloadDataFile = function(){
-            if(!$scope.selected){
+        $scope.downloadDataFile = function () {
+            if (!$scope.getSelected()) {
                 throw "no file selected";
             }
-            $state.go('downloadDataFile', {file: $scope.selected});
+            iaLoadingSpinner.show();
+            $state.go('downloadDataFile', {file: $scope.getSelected()}).
+                then(iaLoadingSpinner.hide);
         };
 
-        $scope.deleteDataFile = function(){
-            if(!$scope.selected){
+        $scope.deleteDataFile = function () {
+            if (!$scope.getSelected()) {
                 throw "no file selected";
             }
-            $state.go('deleteDataFile', {fileId: $scope.selected.id});
+            iaLoadingSpinner.show();
+            $state.go('deleteDataFile', {fileId: $scope.getSelected().id}).
+                then(iaLoadingSpinner.hide);
         };
     });
 });

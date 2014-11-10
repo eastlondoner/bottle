@@ -35,5 +35,6 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
             ).then(iaLoadingSpinner.hide);
 
         }
+
     });
 });

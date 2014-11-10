@@ -1,3 +1,4 @@
+@import "mixins.less";
 .three-column {
   .column-entry {
     text-transform: uppercase;
@@ -25,6 +26,14 @@
         display: inline-block;
         font-size: @font-size-small;
         padding-top: 0.3em;
+
+        &.active {
+          background-color: #dcdcdc;
+        }
+
+        span {
+          .clickable;
+        }
       }
     }
 

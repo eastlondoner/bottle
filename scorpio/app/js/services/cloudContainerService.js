@@ -12,7 +12,7 @@ define(
          * Cloud Files containers and the files that they contain
          */
 
-        if(TEST) return;
+        if (TEST) return;
 
         function alertError(response, detail) {
             alert(
@@ -23,52 +23,61 @@ define(
         }
 
         services.factory('containerService', ['$http', '$q', '$upload', function ($http, $q, $upload) {
-            return {
-                getContainers: function () {
-                    return $http.get("/containers").
+
+            function getFilesInContainer(containerId) {
+                return $q(function (resolve, reject) {
+                    $http.get("/containers/" + containerId).
                         success(function (data) {
-                            return _.map(data || [], Container.build);
+                            resolve(_.map(data || [], File.build));
                         }).
                         catch(function (response) {
-                            alertError(response, "Retrieving container list.");
-                            return [];
+                            alertError(response, "Retrieving files for container: " + containerId);
+                            resolve([]);
                         });
+                });
+            }
+
+            return {
+                getContainers: function () {
+                    return $q(function (resolve, reject) {
+                        $http.get("/containers").
+                            success(function (data) {
+                                resolve(_.map(data || [], Container.build));
+                            }).
+                            catch(function (response) {
+                                alertError(response, "Retrieving container list.");
+                                resolve([]);
+                            });
+                    });
                 },
                 getContainer: function (containerId) {
                     return new Container({name: containerId, id: containerId})
                 },
-                getFilesInContainer: function (containerId) {
-                    return $http.get("/containers/" + containerId).
-                        success(function (data) {
-                            return _.map(data || [], File.build);
-                        }).
-                        catch(function (response) {
-                            alertError(response, "Retrieving files for container: " + containerId);
-                            return [];
-                        });
-                },
+                getFilesInContainer: getFilesInContainer,
                 getFileInContainer: function (fileId, containerId) {
-                    return $http.get("/containers/" + containerId + "/" + fileId).
-                        success(File.build).
-                        catch(function (response) {
-                            alertError(response, "Retrieving file: " + fileId);
-                            return [];
-                        });
+                    return $q(function (resolve, reject) {
+                        $http.get("/containers/" + containerId + "/" + fileId).
+                            success(_.compose(resolve, File.build)).
+                            catch(function (response) {
+                                alertError(response, "Retrieving file: " + fileId);
+                                resolve([]);
+                            });
+                    });
                 },
                 deleteFileInContainer: function (fileId, containerId, cb) {
-                    if(!cb) cb = _.identity;
+                    if (!cb) cb = _.identity;
                     return $http.delete("/containers/" + containerId + "/" + fileId).
-                        success(_.partial(cb,null)).
+                        success(_.partial(cb, null)).
                         catch(function (response) {
                             alertError(response, "Deleting file: " + fileId);
                             cb(response);
                             return null;
                         });
                 },
-                uploadFileToContainer: function(file, containerId, cb){
-                    if(!cb) cb = _.identity;
+                uploadFileToContainer: function (file, containerId, cb) {
+                    if (!cb) cb = _.identity;
                     return $upload.upload({
-                        url: '/container/'+containerId,
+                        url: '/containers/' + containerId,
                         method: 'POST', //or 'PUT',
                         //data: {myObj: $scope.myModelObj},
                         file: file // or list of files ($files) for html5 only
@@ -83,7 +92,26 @@ define(
                         // file is uploaded successfully
                         // data is the response from the server
                         console.log(data);
-                        cb(null, data);
+
+                        //Deliberately wait because it takes time for the new file to register with rackspace!
+
+                        var retries = 0;
+                        function checkForFile() {
+                            if(retries++ > 8){
+                                //it's uploaded ok but it's not showing up ... return anyway, user will figure it out
+                                return cb(null, data);
+                            }
+                            getFilesInContainer(containerId).then(function (files) {
+                                return _.findWhere(files, {name: file.name})
+                            }).then(function (found) {
+                                if (found) {
+                                    return cb(null, data);
+                                }
+                                setTimeout(checkForFile,500);
+                            })
+                        }
+                        //Poll till file shows up!
+                        checkForFile();
                     }).catch(function (err) {
                         console.error(err);
                         cb(err);

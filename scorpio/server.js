@@ -16,13 +16,15 @@ var express = require('express'),
     async = require('async'),
     argv = require('optimist').argv,
     Busboy = require('busboy'),
-    CloudFileStream = require('cloudfs')
+    CloudFileStream = require('cloudfs'),
+    session = require('express-session'),
+    crypto = require("cryptiles"),
+    bodyParser = require('body-parser')
     ;
 
 // TODO: Accept a command line argument to set config file
 var config = JSON.parse(fs.readFileSync('config/serverConfig.json'));
 
-var rackspaceStorage = new CloudFileStream();
 
 //var smtpTransport = nodemailer.createTransport("SMTP", config.mail);
 
@@ -30,10 +32,32 @@ var app = express();
 
 app.use(express.logger());
 
+
 /// Basic Auth
 app.use(express.basicAuth(function (user, pass) {
     return user === 'trial' && pass === 'trial';
 }));
+app.use(session({
+    secret: crypto.randomString(36),
+    cookie: { secure: false, maxAge: 600000 }
+}));
+
+//redirect to login if you hve no session
+function setRackspaceStorage(req) {
+    req.rackspaceStorage = new CloudFileStream({username: req.session.rackspace.username, password: req.session.rackspace.password});
+}
+app.use(function (req, res, next) {
+    if (!req.session || !req.session.rackspace) {
+        if (req.path == '/login') {
+            return next();
+        }
+        res.redirect("/login");
+    } else {
+        setRackspaceStorage(req);
+        next();
+    }
+});
+
 
 // Server the files for the client side app
 app.use('/', express.static(__dirname + "/app"));
@@ -65,7 +89,7 @@ app.post("/containers/:container", function (req, res) {
 
     var busboy = new Busboy({ headers: req.headers });
     busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-        var uploadStream = rackspaceStorage.getFileAsWritableStream(filename, req.params.container);
+        var uploadStream = req.rackspaceStorage.getFileAsWritableStream(filename, req.params.container);
         console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
         file.on('end', function () {
             uploadStream.end();
@@ -87,16 +111,16 @@ app.post("/containers/:container", function (req, res) {
 
 app.get("/containers/:container", function (req, res) {
     var containerName = req.params.container;
-    rackspaceStorage.getContainerFiles(containerName, function(err, files){
-        if(!handleError(res,err)){
+    req.rackspaceStorage.getContainerFiles(containerName, function (err, files) {
+        if (!handleError(res, err)) {
             res.json(files);
         }
     })
 });
 
 app.get("/containers", function (req, res) {
-    rackspaceStorage.getContainers(function(err, containers){
-        if(!handleError(res,err)){
+    req.rackspaceStorage.getContainers(function (err, containers) {
+        if (!handleError(res, err)) {
             res.json(containers);
         }
     })
@@ -105,8 +129,8 @@ app.get("/containers", function (req, res) {
 
 app.put("/containers/:container", function (req, res) {
     var containerName = req.params.container;
-    rackspaceStorage.createContainer(containerName, function(err, container){
-        if(!handleError(res,err)){
+    req.rackspaceStorage.createContainer(containerName, function (err, container) {
+        if (!handleError(res, err)) {
             res.status(201);
         }
     })
@@ -115,21 +139,68 @@ app.put("/containers/:container", function (req, res) {
 app.get("/containers/:container/:file", function (req, res) {
     var containerName = req.params.container;
     var fileName = req.params.file;
-    var stream = rackspaceStorage.getFileAsReadableStream(fileName, containerName, function(err){
-        handleError(res,err)
+    req.rackspaceStorage.getFileDetails(fileName, containerName, function (err, file) {
+        if (!handleError(res, err)) {
+            res.json(file);
+        }
+    });
+
+});
+
+app.get("/containers/:container/download/:file", function (req, res) {
+    var containerName = req.params.container;
+    var fileName = req.params.file;
+    var stream = req.rackspaceStorage.getFileAsReadableStream(fileName, containerName, function (err) {
+        handleError(res, err)
     });
     stream.pipe(res);
 });
 
-function handleError(res, error){
-    if(error){
-        if(error instanceof Error){
-            if(error.code == "ENOTFOUND"){
-                res.status(503);
-            }
-        } else{
-            res.status(500);
-            return true;
+app.delete("/containers/:container/:file", function (req, res) {
+    var containerName = req.params.container;
+    var fileName = req.params.file;
+    req.rackspaceStorage.removeFile(fileName, containerName, function (err) {
+        if (!handleError(res, err)) {
+            res.status(204);
         }
+        res.end();
+    });
+});
+
+
+var formBodyParser = bodyParser.urlencoded({extended: false});
+app.post("/login", formBodyParser, function (req, res) {
+    req.session.rackspace = req.body;
+    setRackspaceStorage(req);
+    req.rackspaceStorage.createContainerIfNotExists("z_DO_NOT_DELETE_scorpio_JARS", function (err, container) {
+        if (err) {
+            if (err.statusCode === 401 || err.failcode === "Unauthorized") {
+                return res.redirect("/login?error=");
+            }
+            throw err;
+        } else {
+            console.log("jar container found");
+            res.redirect("/");
+        }
+    });
+});
+app.get("/login", function (req, res) {
+    res.sendfile(__dirname + "/app/partials/login.html")
+});
+app.get("/logout", function (req, res) {
+    res.session.destroy();
+});
+
+function handleError(res, error) {
+    if (error) {
+        var status = 500;
+        if (error instanceof Error) {
+            if (error.code == "ENOTFOUND") {
+                status = 503;
+            }
+        }
+        res.status(status);
+        return true;
     }
 }
+

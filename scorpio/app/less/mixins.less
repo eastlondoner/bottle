@@ -18,14 +18,17 @@
   border-right: 1px dotted @color;
 }
 
+.clickable {
+  cursor: pointer;
+}
 
 // Icons
 .icon (@url){
+  .clickable;
   background: transparent url(@url) no-repeat;
   background-size: contain;
   height: 38px;
   width: 38px;
-  cursor: pointer;
   display: inline-block;
   text-indent: -9999px;
   vertical-align: top;
@@ -48,11 +51,11 @@
 }
 
 .icon-flag-red () {
+  .clickable;
   background: transparent url("images/flag-red.png") no-repeat;
   background-size: contain;
   height: 20px;
   width: 20px;
-  cursor: pointer;
   display: inline-block;
   text-indent: -9999px;
   vertical-align: top;

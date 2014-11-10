@@ -14,10 +14,16 @@ define(
 
             $scope.containers = containers;
 
-            $scope.listDataFiles = function (name) {
+            $scope.selected = {value: null};
+            $scope.getSelected = function(){
+                return $scope.selected.value;
+            }
+
+
+            $scope.listDataFiles = function (container) {
                 iaLoadingSpinner.show();
                 $state.go('listDataFiles', {
-                    containerId: name
+                    containerId: container.id
                 }).then(iaLoadingSpinner.hide);
             };
         });
