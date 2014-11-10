@@ -33,10 +33,6 @@ var app = express();
 app.use(express.logger());
 
 
-/// Basic Auth
-app.use(express.basicAuth(function (user, pass) {
-    return user === 'trial' && pass === 'trial';
-}));
 app.use(session({
     secret: crypto.randomString(36),
     cookie: { secure: false, maxAge: 600000 }
