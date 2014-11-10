@@ -32,6 +32,7 @@ To install the dev requirements from the project directory run:
 You'll need to create some configuration files before you can run the server.
 
 In the scorpio directory you need to create a config folder containing serverConfig.json (./config/serverConfig.json).
+
     {
         "server" : {
             "port": 8000
