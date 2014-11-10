@@ -43,3 +43,5 @@ To start the build watcher and demo server run:
     grunt
 
 Then open in your browser: http://127.0.0.1:8000
+
+You must log in with your Rackspace account credentials. If the account you use does not have Cloud Files admin priviliges then things will not work.
