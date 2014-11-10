@@ -55,7 +55,7 @@ require.config({
 
 // hey Angular, we're bootstrapping manually!
 window.name = "NG_DEFER_BOOTSTRAP!";
-window.TEST = false;
+window.TEST = true;
 
 require([
     'angular',

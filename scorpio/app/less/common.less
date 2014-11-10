@@ -74,10 +74,6 @@ ol {
     position: fixed;
 }
 
-.modal-sheet-container .navbar {
-  z-index: @zindex-modal;
-}
-
 .main-menu, .modal-sheet {
   position: fixed;
   width: 100%;
@@ -102,20 +98,6 @@ ol {
     }
     top: @navbar-height;
   }
-}
-
-.modal-sheet {
-    .modal-content {
-        width: 100%;
-        max-height: 400px;
-        padding: 30px 65px;
-        overflow: scroll;
-        z-index: @zindex-modal-background;
-        background: #fff;
-
-        h1 { font-size: floor(@font-size-base * 1.70); } // ~36px
-        h2 { font-size: floor(@font-size-base * 1.25); } // ~30px
-    }
 }
 
 // Loading spinner

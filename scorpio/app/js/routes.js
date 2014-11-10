@@ -35,7 +35,7 @@ define(['angular', 'app'], function (angular, app) {
 
             .state('listJars', {
                 parent: 'scorpioBase',
-                url: 'jars/',
+                url: 'jars',
                 resolve: {
                     jars: function (jarService, $stateParams) {
                         return jarService.getJars();
@@ -52,9 +52,28 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
+            .state('uploadJar', {
+                parent: 'listJars',
+                url: '/upload',
+                resolve: {
+                    container: function (jarService) {
+                        return jarService.getJarContainer();
+                    }
+                },
+                views: {
+                    'modalSheet@base': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'FileUploadController'
+                    },
+                    '@uploadDataFile': {
+                        templateUrl: 'partials/fileUploadModal.html'
+                    }
+                }
+            })
+
             .state('listContainers', {
                 parent: 'scorpioBase',
-                url: 'containers/',
+                url: 'containers',
                 resolve: {
                     containers: function (containerService, $stateParams) {
                         return containerService.getContainers();
@@ -81,7 +100,7 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
-            .state('uploadDataFile',{
+            .state('uploadDataFile', {
                 parent: 'listDataFiles',
                 url: '/upload',
                 resolve: {
@@ -91,11 +110,17 @@ define(['angular', 'app'], function (angular, app) {
                 },
                 views: {
                     'modalSheet@base': {
-                        templateUrl: 'partials/fileUploadModal.html',
+                        templateUrl: 'partials/confirmModal.html',
                         controller: 'FileUploadController'
+                    },
+                    '@uploadDataFile': {
+                        templateUrl: 'partials/fileUploadModal.html'
                     }
                 }
             })
+
+
+
             .state('deleteDataFile', {
                 parent: 'listDataFiles',
                 url: '/delete/:fileId',
@@ -117,7 +142,7 @@ define(['angular', 'app'], function (angular, app) {
 
             .state('listDataFiles', {
                 parent: 'listContainers',
-                url: 'containers/:containerId',
+                url: '/:containerId',
                 resolve: {
                     files: function (containerService, $stateParams) {
                         return containerService.getFilesInContainer($stateParams.containerId);

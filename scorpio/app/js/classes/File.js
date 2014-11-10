@@ -1,4 +1,4 @@
-define("File", [], function () {
+define("File", ['underscore'], function () {
     'use strict';
     /**
      * File class
@@ -16,6 +16,10 @@ define("File", [], function () {
         var checkTypes = _.every(props, _.isString);
         var checkNotEmpty = !_.some(props, _.isEmpty);
         return checkTypes && checkNotEmpty;
+    };
+
+    File.build = function (data) {
+        return new File(data)
     };
 
     return File;

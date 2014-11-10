@@ -7,6 +7,24 @@
 // .modal-dialog    - positioning shell for the actual modal
 // .modal-content   - actual modal w/ bg and corners and shit
 
+.modal-sheet-container .navbar {
+  z-index: @zindex-modal;
+}
+
+.modal-sheet {
+  .modal-content {
+    width: 100%;
+    max-height: 100%;
+    padding: 30px 65px;
+    overflow: auto;
+    z-index: @zindex-modal-background;
+    background: #fff;
+
+    h1 { font-size: floor(@font-size-base * 1.70); } // ~36px
+    h2 { font-size: floor(@font-size-base * 1.25); } // ~30px
+  }
+}
+
 // Kill the scroll on the body
 .modal-open {
   overflow: hidden;
@@ -47,7 +65,6 @@
   margin-right: auto;
   width: auto;
   padding: 10px;
-  margin-top: 200px;
   z-index: (@zindex-modal-background + 10);
 }
 
@@ -124,20 +141,4 @@
   .btn-block + .btn-block {
     margin-left: 0;
   }
-}
-
-// Scale up the modal
-@media screen and (min-width: @screen-tablet) {
-
-  .modal-dialog {
-    left: 50%;
-    right: auto;
-    width: 600px;
-    padding-top: 30px;
-    padding-bottom: 30px;
-  }
-  .modal-content {
-    .box-shadow(0 5px 15px rgba(0,0,0,.5));
-  }
-
 }

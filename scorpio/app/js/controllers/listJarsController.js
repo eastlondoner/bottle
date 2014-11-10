@@ -5,9 +5,8 @@ define(['angular', 'controllersModule'],
      * Allow the user to find a patient via their number and confirm
      * that they have the correct patient
      */
-    controllers.controller('ListJarsController', function ($scope, $rootScope, $state, jars, iaLoadingSpinner, iaModalSheet) {
+    controllers.controller('ListJarsController', function ($scope, $rootScope, $state, jars, jarService, iaLoadingSpinner, iaModalSheet) {
         $scope.jars = jars;
-
     });
 
 });

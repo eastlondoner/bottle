@@ -88,19 +88,17 @@ app.post("/containers/:container", function (req, res) {
 app.get("/containers/:container", function (req, res) {
     var containerName = req.params.container;
     rackspaceStorage.getContainerFiles(containerName, function(err, files){
-        if(err){
-            return res.status(500);
+        if(!handleError(res,err)){
+            res.json(files);
         }
-        res.json(files);
     })
 });
 
 app.get("/containers", function (req, res) {
     rackspaceStorage.getContainers(function(err, containers){
-        if(err){
-            return res.status(500);
+        if(!handleError(res,err)){
+            res.json(containers);
         }
-        res.json(containers);
     })
 });
 
@@ -108,10 +106,9 @@ app.get("/containers", function (req, res) {
 app.put("/containers/:container", function (req, res) {
     var containerName = req.params.container;
     rackspaceStorage.createContainer(containerName, function(err, container){
-        if(err || !container){
-            return res.status(500);
+        if(!handleError(res,err)){
+            res.status(201);
         }
-        res.status(201);
     })
 });
 
@@ -119,9 +116,20 @@ app.get("/containers/:container/:file", function (req, res) {
     var containerName = req.params.container;
     var fileName = req.params.file;
     var stream = rackspaceStorage.getFileAsReadableStream(fileName, containerName, function(err){
-        if(err || !container){
-            return res.status(500);
-        }
+        handleError(res,err)
     });
     stream.pipe(res);
 });
+
+function handleError(res, error){
+    if(error){
+        if(error instanceof Error){
+            if(error.code == "ENOTFOUND"){
+                res.status(503);
+            }
+        } else{
+            res.status(500);
+            return true;
+        }
+    }
+}

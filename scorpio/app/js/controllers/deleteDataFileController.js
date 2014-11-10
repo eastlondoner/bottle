@@ -13,7 +13,7 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
 
         $scope.confirm = function(){
             iaLoadingSpinner.show();
-            containerService.deleteFileInContainer(file.id, container.name)
+            containerService.deleteFileInContainer(file.id, container.id)
                 .then(_.partial($state.go,'^',{},{location:'replace', reload:true}))
                 .then(iaLoadingSpinner.hide);
         }

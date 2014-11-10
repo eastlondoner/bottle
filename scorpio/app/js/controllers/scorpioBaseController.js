@@ -13,7 +13,9 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
 
         $scope.listJars = function () {
             iaLoadingSpinner.show();
-            $state.go('listJars', {}).then(iaLoadingSpinner.hide);
+            $state.go('listJars', {}).then(iaLoadingSpinner.hide).catch(function(err){
+                console.error(err);
+            });
         };
 
     });
