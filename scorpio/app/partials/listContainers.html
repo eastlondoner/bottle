@@ -1,18 +1,20 @@
 <ol>
     <li ng-repeat="container in containers"
-        ng-click="listDataFiles(container.id)"
-        class="column-entry">
-        {{ container.name }}
+        ng-click="listDataFiles(container)"
+        class="column-entry"
+        toggle-selected
+        model="container">
+        <span>{{ container.name }}</span>
     </li>
 </ol>
 <ol>
-    <li>
-        <a class="icon-link" ng-click="linkContainerToJar()">Link to JAR</a>
+    <li class="icon-join">
+        <a ui-sref="linkJarToContainer({ jarId: selected.value.id })">Link to JAR</a>
     </li>
-    <li>
-        <a class="icon-create" ng-click="createContanier()">Add container</a>
+    <li class="icon-create">
+        <a ng-click="createContainer()">Add container</a>
     </li>
-    <li>
-        <a class="icon-delete" ng-click="deleteContainer()">Delete container</a>
+    <li class="icon-delete">
+        <a class="clickable" ng-click="deleteContainer()">Delete container</a>
     </li>
 </ol>

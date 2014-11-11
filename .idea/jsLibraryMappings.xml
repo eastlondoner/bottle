@@ -2,8 +2,8 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/cloudfs" libraries="{Node.js v0.10.31 Core Modules, cloudfs node_modules}" />
-    <file url="file://$PROJECT_DIR$/datacloud" libraries="{Node.js v0.10.31 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/pubmedslurp" libraries="{Node.js v0.10.31 Core Modules}" />
+    <file url="file://$PROJECT_DIR$/datacloud" libraries="{Node.js v0.10.31 Core Modules, datacloud node_modules}" />
+    <file url="file://$PROJECT_DIR$/pubmedslurp" libraries="{Node.js v0.10.31 Core Modules, pubmedslurp node_modules}" />
     <file url="file://$PROJECT_DIR$/scorpio" libraries="{Node.js v0.10.31 Core Modules, scorpio node_modules}" />
     <includedPredefinedLibrary name="Node.js Globals" />
   </component>

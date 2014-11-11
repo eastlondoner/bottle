@@ -1,21 +1,23 @@
 <ol>
     <li ng-repeat="jar in jars"
         ng-click="jarSelected(jar.id)"
-        class="column-entry">
+        class="column-entry"
+        toggle-selected
+        model="jar">
         {{ jar.name }}
     </li>
 </ol>
 <ol>
-    <li>
-        <a ng-click="linkJarToContainer()">Link to container</a>
+    <li class="icon-join">
+        <a ui-sref="linkJarToContainer({ jarId: selected.value.id })">Link to container</a>
     </li>
-    <li>
+    <li class="icon-upload">
         <a ui-sref="uploadJar">Upload JAR file</a>
     </li>
-    <li>
-        <a ng-click="downloadJar()">Download JAR file</a>
+    <li class="icon-download">
+        <a ng-href="/containers/{{jarContainer.id}}/download/{{selected.value.id}}" download>Download JAR file</a>
     </li>
-    <li>
-        <a ng-click="deleteJar()">Delete JAR file</a>
+    <li class="icon-delete">
+        <a ui-sref="deleteJar({ jarId: selected.value.id })">Delete JAR file</a>
     </li>
 </ol>

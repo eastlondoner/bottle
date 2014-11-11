@@ -65,8 +65,24 @@ define(['angular', 'app'], function (angular, app) {
                         templateUrl: 'partials/confirmModal.html',
                         controller: 'FileUploadController'
                     },
-                    '@uploadDataFile': {
+                    '@uploadJar': {
                         templateUrl: 'partials/fileUploadModal.html'
+                    }
+                }
+            })
+
+            .state('deleteJar', {
+                parent: 'listJars',
+                url: '/delete/:jarId',
+                resolve: {
+                    jar: function (jarService, $stateParams) {
+                        return jarService.getJar($stateParams.jarId);
+                    }
+                },
+                views: {
+                    'modalSheet@base': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'DeleteJarController'
                     }
                 }
             })

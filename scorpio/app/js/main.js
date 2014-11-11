@@ -6,7 +6,7 @@ require.config({
         'requirejs-text': '../../bower_components/requirejs-text/text',
         requirejs: '../../bower_components/requirejs/require',
         'angular-ui-router': '../../bower_components/angular-ui-router/release/angular-ui-router',
-        underscore: '../../bower_components/underscore-amd/underscore',
+        underscore: '../../bower_components/underscore/underscore-min',
         'angular-ui-bootstrap': '../../bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls',
         'angular-file-upload-shim': '../../bower_components/ng-file-upload/angular-file-upload-shim.min',
         'angular-file-upload': '../../bower_components/ng-file-upload/angular-file-upload.min'
@@ -55,7 +55,7 @@ require.config({
 
 // hey Angular, we're bootstrapping manually!
 window.name = "NG_DEFER_BOOTSTRAP!";
-window.TEST = false;
+window.TEST = true;
 
 require([
     'angular',

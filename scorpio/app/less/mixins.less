@@ -1,5 +1,10 @@
 /* All the common things that we need to share between different elements */
 
+.center-page (@width: 335px) {
+   margin: 0 auto;
+   vertical-align: middle;
+   width: @width;
+}
 
 .dotted-bottom-border (@color: @general-gray) {
   border-bottom: 1px dotted @color;
@@ -13,11 +18,14 @@
   border-right: 1px dotted @color;
 }
 
+.clickable {
+  cursor: pointer;
+}
 
 // Icons
 .icon (@url){
   background: transparent url(@url) no-repeat;
-  background-size: auto;
+  background-size: contain;
   background-position: left center;
   background-origin: padding-box;
 }

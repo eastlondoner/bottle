@@ -5,7 +5,7 @@ define("File", ['underscore'], function () {
      */
     function File(obj) {
         _.extend(this, obj);
-        if (!this.id) this.id = name;
+        if (!this.id) this.id = this.name;
         if (!this.validate()) {
             throw "Invalid File Defn";
         }
