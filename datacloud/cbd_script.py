@@ -19,6 +19,7 @@ def auth():
         request.add_header('Content-Type', 'application/json')
         response = urllib2.urlopen(request)
         returned_data = json.loads(response.read())
+        print returned_data
         token = returned_data['access']['token']['id']
         id = returned_data['access']['token']['tenant']['id']
         endpoint = ""
