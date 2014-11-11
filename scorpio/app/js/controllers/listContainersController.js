@@ -15,7 +15,7 @@ define(
             $scope.containers = containers;
 
             $scope.selected = {value: null};
-            $scope.getSelected = function(){
+            $scope.getSelected = function () {
                 return $scope.selected.value;
             }
 
@@ -25,6 +25,12 @@ define(
                 $state.go('listDataFiles', {
                     containerId: container.id
                 }).then(iaLoadingSpinner.hide);
+            };
+
+            $scope.createContainer = function () {
+                iaLoadingSpinner.show();
+                $state.go('createContainer', {}).
+                    then(iaLoadingSpinner.hide);
             };
         });
     }
