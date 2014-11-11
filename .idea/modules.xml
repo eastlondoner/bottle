@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bottle.iml" filepath="$PROJECT_DIR$/bottle.iml" />
       <module fileurl="file://$PROJECT_DIR$/cloudfs/cloudfs.iml" filepath="$PROJECT_DIR$/cloudfs/cloudfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/datacloud/datacloud.iml" filepath="$PROJECT_DIR$/datacloud/datacloud.iml" />
       <module fileurl="file://$PROJECT_DIR$/pubmedcount/pubmedcount.iml" filepath="$PROJECT_DIR$/pubmedcount/pubmedcount.iml" />
       <module fileurl="file://$PROJECT_DIR$/pubmedgenerate/pubmedgenerate.iml" filepath="$PROJECT_DIR$/pubmedgenerate/pubmedgenerate.iml" />
       <module fileurl="file://$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" filepath="$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" />
