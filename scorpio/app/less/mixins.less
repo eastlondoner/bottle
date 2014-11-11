@@ -1,10 +1,5 @@
 /* All the common things that we need to share between different elements */
 
-.center-page (@width: 335px) {
-   margin: 0 auto;
-   vertical-align: middle;
-   width: @width;
-}
 
 .dotted-bottom-border (@color: @general-gray) {
   border-bottom: 1px dotted @color;
@@ -22,51 +17,12 @@
 // Icons
 .icon (@url){
   background: transparent url(@url) no-repeat;
-  background-size: contain;
-  height: 38px;
-  width: 38px;
-  cursor: pointer;
-  display: inline-block;
-  text-indent: -9999px;
-  vertical-align: top;
+  background-size: auto;
+  background-position: left center;
+  background-origin: padding-box;
 }
 
-.icon-edit () {
-  .icon("images/icon-edit.png");
-}
-
-.icon-add () {
-  .icon("images/icon-add.png");
-}
-
-.icon-help () {
-  .icon("images/icon-help.png");
-}
-
-.icon-alert-red () {
-  .icon("images/icon-alert-red.png");
-}
-
-.icon-flag-red () {
-  background: transparent url("images/flag-red.png") no-repeat;
-  background-size: contain;
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
-  display: inline-block;
-  text-indent: -9999px;
-  vertical-align: top;
-}
-
-.icon-alert () {
-  .icon("images/icon-alert.png");
-}
-
-.icon-check () {
-  .icon("images/icon-check.png");
-}
-
-.icon-empty () {
+.icon-empty {
   .icon("images/icon-empty.png");
 }
 

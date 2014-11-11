@@ -16,8 +16,7 @@ var express = require('express'),
     async = require('async'),
     argv = require('optimist').argv,
     Busboy = require('busboy'),
-    CloudFileStream = require('cloudfs')
-    ;
+    CloudFileStream = require('cloudfs');
 
 // TODO: Accept a command line argument to set config file
 var config = JSON.parse(fs.readFileSync('config/serverConfig.json'));
