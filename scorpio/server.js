@@ -167,9 +167,10 @@ app.delete("/containers/:container/:file", function (req, res) {
 var formBodyParser = bodyParser.urlencoded({extended: false});
 app.post("/login", formBodyParser, function (req, res) {
     req.session.rackspace = req.body;
-    if(req.session.rackspace.username == "TEST"){
+    if(req.session.rackspace.username === "TEST"){
         console.log("TEST MODE");
         res.redirect("/")
+        return;
     }
     setRackspaceStorage(req);
     req.rackspaceStorage.createContainerIfNotExists("z_DO_NOT_DELETE_scorpio_JARS", function (err, container) {

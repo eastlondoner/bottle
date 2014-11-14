@@ -18,6 +18,11 @@ div {
     height: 0;
     width: 0;
   }
+
+  &.absolute {
+    position: absolute;
+    height:0;
+  }
 }
 
 ol {
@@ -41,25 +46,21 @@ ol {
   }
 }
 
-.modal-content {
-  .modal-body {
-    font-family: @headings-font-family;
-    font-size: 20px;
-    text-align: center;
-  }
-}
-
 .navbar {
-    position: fixed;
+  position: fixed;
 }
 
-.main-menu, .modal-sheet {
-  position: fixed;
+.slide-in {
+  transition: top 500ms, visibility 500ms;
+  -webkit-transition: top 500ms, visibility 500ms; /* Safari */
+}
+
+.modal-sheet {
+  position: relative;
   width: 100%;
   top: -300px;
 
-  transition: top 500ms, visibility 500ms;
-  -webkit-transition: top 500ms, visibility 500ms; /* Safari */
+  .slide-in;
 
   visibility: hidden;
   .modal-backdrop {
@@ -75,22 +76,57 @@ ol {
     .modal-backdrop {
       opacity: 1.0;
     }
-    top: @navbar-height;
+    top: 0;
   }
+}
+
+.main-menu {
+  height: auto;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  .modal-sheet;
+  ul, li {
+    height: auto;
+    background-color: white;
+    position: relative;
+    line-height: @line-height-base;
+  }
+  >ul {
+    z-index: @zindex-modal+1;
+    display: flex;
+    flex-direction: column;
+    padding:1em;
+    padding-right: 2em;
+    border: 1px solid black;
+    border-top: 0;
+    >li {
+      display: inline;
+    }
+  }
+
+  &.shown {
+    visibility: visible;
+    .modal-backdrop {
+      opacity: 1.0;
+    }
+    top: 0;
+  }
+
 }
 
 // Loading spinner
 .loading {
-    .modal-backdrop;
-    z-index: @zindex-modal;
-    opacity: 0.7;
-    background-color: rgb(200, 200, 200);
-    background-image: url("images/spinner.gif");
-    background-repeat: no-repeat;
-    background-position: center;
+  .modal-backdrop;
+  z-index: @zindex-modal;
+  opacity: 0.7;
+  background-color: rgb(200, 200, 200);
+  background-image: url("images/spinner.gif");
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .btn.btn-cancel {
-    background-color: #ddd;
-    border-color: #ccc;
+  background-color: #ddd;
+  border-color: #ccc;
 }

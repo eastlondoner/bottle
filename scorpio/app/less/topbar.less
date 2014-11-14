@@ -4,7 +4,7 @@
 body {
   background: #ffffff;
   padding-top: @nav_bar_height;
-  position: relative;
+  position: fixed;
 }
 
 .topbar {
@@ -13,6 +13,7 @@ body {
   max-height: @nav_bar_height;
   align-items: center;
   background-color: #dcdcdc;
+  z-index: @zindex-navbar;
 
   p {
     margin: 0 0px 0 10px;
@@ -35,5 +36,4 @@ body {
     text-indent: -9999px;
     margin-right: 5px;
   }
-
 }

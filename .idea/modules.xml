@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/pubmedcount/pubmedcount.iml" filepath="$PROJECT_DIR$/pubmedcount/pubmedcount.iml" />
       <module fileurl="file://$PROJECT_DIR$/pubmedgenerate/pubmedgenerate.iml" filepath="$PROJECT_DIR$/pubmedgenerate/pubmedgenerate.iml" />
       <module fileurl="file://$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" filepath="$PROJECT_DIR$/pubmedslurp/pubmedslurp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sandbox/sandbox.iml" filepath="$PROJECT_DIR$/sandbox/sandbox.iml" />
       <module fileurl="file://$PROJECT_DIR$/scorpio/scorpio.iml" filepath="$PROJECT_DIR$/scorpio/scorpio.iml" />
       <module fileurl="file://$PROJECT_DIR$/wordcount/wordcount.iml" filepath="$PROJECT_DIR$/wordcount/wordcount.iml" />
     </modules>

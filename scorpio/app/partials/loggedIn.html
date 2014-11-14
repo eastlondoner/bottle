@@ -1,16 +1,24 @@
-<div ng-controller="MenuController" class="abstract">
-  <div class='navbar navbar-default topbar navbar-fixed-top right'>
-    <p class='logo'>SCORPIO</p>
-    <p ng-click="toggleMenu()" class='menu js-topbar-menu'>Menu</p>
-  </div>
-  <div class="main-menu" ng-class="{shown: menuShown}" ng-click="hideMenu()">
-    <ul>
-      <li class="arrow"><a ui-sref="about">About Scorpio</a></li>
-      <li><a ui-sref="login">Sign out</a></li>
-    </ul>
-    <div class="modal-backdrop"></div>
-  </div>
+
+<div ng-controller="MenuController" class="absolute">
+    <div class='navbar navbar-default topbar navbar-fixed-top right'>
+        <p class='logo'>SCORPIO</p>
+
+        <p ng-click="toggleMenu()" class='menu js-topbar-menu'>Menu</p>
+    </div>
+    <div class="main-menu" ng-class="{shown: menuShown}" ng-click="hideMenu()">
+        <div class="modal-backdrop"></div>
+        <ul>
+            <li class="arrow"><a ui-sref="about">About Scorpio</a></li>
+            <li><a ui-sref="login">Sign out</a></li>
+        </ul>
+    </div>
 </div>
-  
+<div ng-controller="ModalSheetController" ng-show="modal.current.shown" class="modal-sheet-controller">
+    <div class="modal-sheet" ng-class="{shown: modal.current.shown}">
+        <section ui-view="modalSheet" class="modal-dialog">
+        </section>
+        <div class="modal-backdrop"></div>
+    </div>
+</div>
 <div ui-view>
 </div>

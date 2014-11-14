@@ -6,6 +6,11 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
      */
     controllers.controller('ScorpioBaseController', function ($scope, $rootScope, $state, iaLoadingSpinner, iaModalSheet) {
 
+        $scope.jobs = "JOBS";
+        $scope.containers = "CONTAINERS";
+        $scope.jars = "JARS";
+        $scope.selected = {};
+
         $scope.listContainers = function () {
             iaLoadingSpinner.show();
             $state.go('listContainers', {}).then(iaLoadingSpinner.hide);
@@ -13,7 +18,7 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
 
         $scope.listJars = function () {
             iaLoadingSpinner.show();
-            $state.go('listJars', {}).then(iaLoadingSpinner.hide).catch(function(err){
+            $state.go('listJars', {}).then(iaLoadingSpinner.hide).catch(function (err) {
                 console.error(err);
             });
         };

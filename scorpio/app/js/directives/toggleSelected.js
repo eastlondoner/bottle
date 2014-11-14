@@ -11,21 +11,38 @@ define(['angular', 'directivesModule'], function (angular, directives) {
             },
             transclude: true,
             link: function (scope, element, attrs) {
-                scope.localFunction = function () {
-                    if(scope.$parent.selected.value === scope.model){
-                        scope.$parent.selected.value = null;
-                    } else {
-                        scope.$parent.selected.value = scope.model;
-                    }
-                };
-                scope.$parent.$watch('selected.value', function () {
-                    // Is this set to my scope?
+                if(_.isUndefined(scope.$root.globalSelected)){
+                    scope.$root.globalSelected = {};
+                }
+
+                function setClass(){
                     if (scope.model === scope.$parent.selected.value) {
-                        scope.selectedClass = "active";
+                        if (scope.model === scope.$root.globalSelected.value) {
+                            scope.selectedClass = "active focus";
+                        } else {
+                            scope.selectedClass = "active";
+                        }
                     } else {
                         // nope
                         scope.selectedClass = '';
                     }
+                }
+
+                scope.localFunction = function () {
+                    scope.$parent.selected.value = scope.model;
+                    scope.$root.globalSelected.value = scope.model;
+                };
+
+                scope.$parent.$watch('selected.value', function () {
+                    // Is this set to my scope?
+                    setClass();
+                });
+
+
+
+                scope.$root.$watch('globalSelected', function () {
+                    // Is this set to my scope?
+                    setClass();
                 }, true);
             }
         };

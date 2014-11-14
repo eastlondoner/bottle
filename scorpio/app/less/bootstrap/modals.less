@@ -7,12 +7,18 @@
 // .modal-dialog    - positioning shell for the actual modal
 // .modal-content   - actual modal w/ bg and corners and shit
 
-.modal-sheet-container .navbar {
+.modal-sheet-controller  {
   z-index: @zindex-modal;
+  position:absolute;
 }
 
 .modal-sheet {
+  height: 100%;
+  * {
+    height: auto;
+  }
   .modal-content {
+    flex-direction: column;
     width: 100%;
     max-height: 100%;
     padding: 30px 65px;
@@ -22,6 +28,26 @@
 
     h1 { font-size: floor(@font-size-base * 1.70); } // ~36px
     h2 { font-size: floor(@font-size-base * 1.25); } // ~30px
+
+    .modal-body {
+      padding-top:5px;
+      flex-direction: column;
+      font-family: @headings-font-family;
+      font-size: @font-size-base;
+      text-align: center;
+      .modal-message {
+        padding-bottom: 1em;
+      }
+      > div {
+        padding:20px;
+      }
+    }
+
+    .modal-footer {
+      button {
+        flex-grow: 1;
+      }
+    }
   }
 }
 

@@ -61,7 +61,7 @@ define(['angular', 'app'], function (angular, app) {
                     }
                 },
                 views: {
-                    'modalSheet@base': {
+                    'modalSheet@loggedIn': {
                         templateUrl: 'partials/confirmModal.html',
                         controller: 'FileUploadController'
                     },
@@ -80,7 +80,7 @@ define(['angular', 'app'], function (angular, app) {
                     }
                 },
                 views: {
-                    'modalSheet@base': {
+                    'modalSheet@loggedIn': {
                         templateUrl: 'partials/confirmModal.html',
                         controller: 'DeleteJarController'
                     }
@@ -125,7 +125,7 @@ define(['angular', 'app'], function (angular, app) {
                     }
                 },
                 views: {
-                    'modalSheet@base': {
+                    'modalSheet@loggedIn': {
                         templateUrl: 'partials/confirmModal.html',
                         controller: 'FileUploadController'
                     },
@@ -149,7 +149,7 @@ define(['angular', 'app'], function (angular, app) {
                     }
                 },
                 views: {
-                    'modalSheet@base': {
+                    'modalSheet@loggedIn': {
                         templateUrl: 'partials/confirmModal.html',
                         controller: 'DeleteDataFileController'
                     }

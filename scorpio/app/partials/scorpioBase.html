@@ -1,15 +1,23 @@
-
-<div class="scorpio-container"  ng-controller="ScorpioBaseController">
+<div class="scorpio-container" ng-controller="ScorpioBaseController">
     <div class="three-column container">
         <div class="first column">
             <ol>
-                <li class="icon-container clickable" ng-click="listContainers()">
+                <li class="icon-container clickable"
+                    ng-click="listContainers()"
+                    toggle-selected
+                    model="containers">
                     Containers
                 </li>
-                <li class="icon-jar clickable" ng-click="listJars()">
+                <li class="icon-jar clickable"
+                    ng-click="listJars()"
+                    toggle-selected
+                    model="jars">
                     Jars
                 </li>
-                <li class="icon-elephant clickable" ng-click="listJobs()">
+                <li class="icon-elephant clickable"
+                    ng-click="listJobs()"
+                    toggle-selected
+                    model="jobs">
                     Jobs
                 </li>
             </ol>
