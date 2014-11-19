@@ -172,6 +172,29 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
+
+            .state('startJob', {
+                parent: 'listJars',
+                url: '/job',
+                resolve: {
+                    containers: function (containerService, $stateParams) {
+                        return containerService.getContainers();
+                    },
+                    jars: function (jarService, $stateParams) {
+                        return jarService.getJars();
+                    }
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'StartJobController'
+                    },
+                    '@uploadJar': {
+                        templateUrl: 'partials/startJobModal.html'
+                    }
+                }
+            })
+
         ;
 
         $urlRouterProvider.otherwise('/');

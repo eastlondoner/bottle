@@ -30,6 +30,8 @@
         "forever": "~0.10.11",
         "optimist": "~0.6.0",
         "cloudfs": "file:../cloudfs",
-        "cryptiles" : "*"
+        "datacloud": "file:../datacloud",
+        "cryptiles": "*",
+        "node-uuid": "*"
     }
 }

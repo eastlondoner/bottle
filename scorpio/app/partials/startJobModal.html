@@ -1,15 +1,20 @@
-<div>
-    <!--
-    <input type="text" ng-model="myModelObj">
-    -->
-    <input type="file" ng-file-select="onFileSelect($files)">
-    <!--
-    <input type="file" ng-file-select="onFileSelect($files)" multiple accept="image/*">
-    <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
-    <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
-         ng-show="dropSupported">drop files here</div>
-    <div ng-file-drop-available="dropSupported=true"
-         ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
-    -->
-    <button ng-show="uploadInProgress()" ng-click="upload.abort()">Cancel Upload</button>
-</div>
+<form method="POST" action="/clusters">
+    <div>
+        <span>Post Install Options</span>
+    <input type="text" name="rack_region" placeholder="rack_region">
+    <input type="text" name="input_data_container" placeholder="input_data_container">
+    <input type="text" name="input_file" placeholder="input_file">
+    <input type="text" name="output_data_container" placeholder="output_data_container">
+    <input type="text" name="output_folder" placeholder="output_folder">
+    <input type="text" name="status_file" placeholder="status_file">
+    <input type="text" name="input_jar" placeholder="input_jar">
+    <input type="text" name="mr_options" placeholder="mr_options">
+    </div>
+    <div>
+        <span>Cluster Options</span>
+        <input type="text" name="cluster_name" placeholder="cluster_name">
+        <input type="text" name="cluster_type" placeholder="cluster_type">
+        <input type="text" name="cluster_flavor" placeholder="cluster_flavor">
+        <input type="text" name="cluster_nodes" placeholder="cluster_nodes">
+    </div>
+</form>

@@ -19,7 +19,9 @@ var express = require('express'),
     CloudFileStream = require('cloudfs'),
     session = require('express-session'),
     crypto = require("cryptiles"),
-    bodyParser = require('body-parser')
+    bodyParser = require('body-parser'),
+    DataCloud = require('datacloud'),
+    uuidProvider = require('node-uuid')
     ;
 
 // TODO: Accept a command line argument to set config file
@@ -27,6 +29,7 @@ var config = JSON.parse(fs.readFileSync('config/serverConfig.json'));
 
 
 //var smtpTransport = nodemailer.createTransport("SMTP", config.mail);
+var formBodyParser = bodyParser.urlencoded({extended: false});
 
 var app = express();
 
@@ -39,8 +42,11 @@ app.use(session({
 }));
 
 //redirect to login if you hve no session
+function getRackspaceCredentials(req) {
+    return {username: req.session.rackspace.username, password: req.session.rackspace.password};
+}
 function setRackspaceStorage(req) {
-    req.rackspaceStorage = new CloudFileStream({username: req.session.rackspace.username, password: req.session.rackspace.password});
+    req.rackspaceStorage = new CloudFileStream(getRackspaceCredentials(req));
 }
 app.use(function (req, res, next) {
     if (!req.session || !req.session.rackspace) {
@@ -163,17 +169,45 @@ app.delete("/containers/:container/:file", function (req, res) {
     });
 });
 
+app.post("/clusters", formBodyParser, function (req, res) {
+    var postBody = req.body;
+    var dataCloud = new DataCloud();
+    var credentials = getRackspaceCredentials(req);
+    var jobId = uuidProvider.v1();
+    var outFile = req.rackspaceStorage.getFileAsWritableStream(jobId, config.containers.startupScriptContainer);
 
-var formBodyParser = bodyParser.urlencoded({extended: false});
+    var postInstallScriptStream = dataCloud.getPostInstallScriptStream(
+        _.extend({
+            jar_container: config.containers.jarContainer,
+            cluster_name: jobId
+        }, postBody)
+    );
+    postInstallScriptStream.pipe(outFile);
+
+    postInstallScriptStream.on("error", _.partial(handleError, res))
+    outFile.on("error", _.partial(handleError, res))
+
+    outFile.on('end', function () {
+        console.log("wrote install script for job: " + jobId)
+        try {
+            dataCloud.startCluster(_.extend(postBody, credentials));
+        } catch (e) {
+            console.error("error triggering cluster");
+            handleError(res, e);
+        }
+    });
+});
+
+
 app.post("/login", formBodyParser, function (req, res) {
     req.session.rackspace = req.body;
-    if(req.session.rackspace.username === "TEST"){
+    if (req.session.rackspace.username === "TEST") {
         console.log("TEST MODE");
         res.redirect("/")
         return;
     }
     setRackspaceStorage(req);
-    req.rackspaceStorage.createContainerIfNotExists("z_DO_NOT_DELETE_scorpio_JARS", function (err, container) {
+    req.rackspaceStorage.createContainerIfNotExists(config.containers.jarContainer, function (err, container) {
         if (err) {
             if (err.statusCode === 401 || err.failcode === "Unauthorized") {
                 req.session.destroy()
@@ -182,6 +216,11 @@ app.post("/login", formBodyParser, function (req, res) {
             throw err;
         } else {
             console.log("jar container found");
+            var rackspace = req.rackspaceStorage;
+            _.forEach(config.containers, function (value, key) {
+                rackspace.createContainerIfNotExists(value); //fire these requests off, assume they work
+            });
+
             res.redirect("/");
         }
     });
