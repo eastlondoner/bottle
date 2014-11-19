@@ -1,9 +1,11 @@
 {
-  "name": "datacloud",
-  "version": "0.0.0",
-  "private": true,
-  "dependencies": {
-    "python-shell": "*",
-    "underscore": "*"
-  }
+    "name": "datacloud",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "python-shell": "*",
+        "underscore": "*",
+        "stream-stream": "*",
+        "node-ip": "*"
+    }
 }
