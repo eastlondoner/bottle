@@ -32,6 +32,7 @@
         "cloudfs": "file:../cloudfs",
         "datacloud": "file:../datacloud",
         "cryptiles": "*",
-        "node-uuid": "*"
+        "node-uuid": "*",
+        "config": "~1.8.1"
     }
 }

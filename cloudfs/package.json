@@ -4,10 +4,11 @@
     "private": true,
     "scripts": {
     },
-    "main" : "cloudfilestream.js",
+    "main": "cloudfilestream.js",
     "dependencies": {
         "pkgcloud": "*",
         "stream-stream": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "config": "~1.8.1"
     }
 }

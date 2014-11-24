@@ -87,6 +87,70 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
+
+            .state('linkContainerToJar', {
+                parent: 'listContainers',
+                url: '/:containerId/job',
+                resolve: {
+                    container: function (containerService, $stateParams) {
+                        return containerService.getContainer($stateParams.containerId);
+                    },
+                    jars: function (jarService, $stateParams) {
+                        return jarService.getJars();
+                    }
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'ChooseJarController'
+                    },
+                    '@linkContainerToJar': {
+                        templateUrl: 'partials/chooseJarModal.html'
+                    }
+                }
+            })
+
+            .state('linkJarToContainer', {
+                parent: 'listJars',
+                url: '/:jarId/job',
+                resolve: {
+                    containers: function (containerService, $stateParams) {
+                        return containerService.getContainers();
+                    },
+                    jar: function (jarService, $stateParams) {
+                        return jarService.getJar($stateParams.jarId);
+                    }
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'ChooseContainerController'
+                    },
+                    '@linkJarToContainer': {
+                        templateUrl: 'partials/chooseContainerModal.html'
+                    }
+                }
+            })
+
+            .state('startJob', {
+                parent: 'loggedIn',
+                url: '/job/:jarId/:containerId',
+                resolve: {
+                    container: function (containerService, $stateParams) {
+                        return containerService.getContainer($stateParams.containerId);
+                    },
+                    jar: function (jarService, $stateParams) {
+                        return jarService.getJar($stateParams.jarId);
+                    }
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/startJobModal.html',
+                        controller: 'StartJobController'
+                    }
+                }
+            })
+
             .state('listContainers', {
                 parent: 'scorpioBase',
                 url: 'containers',
@@ -172,28 +236,6 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
-
-            .state('startJob', {
-                parent: 'listJars',
-                url: '/job',
-                resolve: {
-                    containers: function (containerService, $stateParams) {
-                        return containerService.getContainers();
-                    },
-                    jars: function (jarService, $stateParams) {
-                        return jarService.getJars();
-                    }
-                },
-                views: {
-                    'modalSheet@loggedIn': {
-                        templateUrl: 'partials/confirmModal.html',
-                        controller: 'StartJobController'
-                    },
-                    '@uploadJar': {
-                        templateUrl: 'partials/startJobModal.html'
-                    }
-                }
-            })
 
         ;
 

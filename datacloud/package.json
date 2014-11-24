@@ -6,6 +6,8 @@
         "python-shell": "*",
         "underscore": "*",
         "stream-stream": "*",
-        "node-ip": "*"
+        "node-ip": "*",
+        "express": "*",
+        "config":  "~1.8.1"
     }
 }

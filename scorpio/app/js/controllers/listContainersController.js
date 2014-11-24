@@ -32,6 +32,10 @@ define(
                 $state.go('createContainer', {}).
                     then(iaLoadingSpinner.hide);
             };
+
+            $scope.linkContainerToJar = function(params){
+                $state.go("linkContainerToJar", params);
+            }
         });
     }
 );
