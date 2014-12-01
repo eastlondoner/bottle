@@ -3,7 +3,7 @@ var PythonShell = require('python-shell'),
     fs = require('fs'),
     stream = require('stream'),
     ss = require('stream-stream'),
-    ip = require('node-ip'),
+    ip = require('ip'),
     express = require('express');
 
 var config = (function(){ //self executing function for closure
@@ -19,7 +19,7 @@ var config = (function(){ //self executing function for closure
             if(_.isUndefined(defaults[property])){
                 console.warn("No default set for property " + property + " in module " + moduleName);
             }
-            return config.get(moduleName + property);
+            return config.get(moduleName + '.' + property);
         }
     }
 })();
@@ -49,7 +49,7 @@ var startupArguments = {
 
 
 var getPostInstallScriptDir = _.once(function(){
-    config.get("POST_INSTALL_SCRIPT_DIR");
+    return config.get("POST_INSTALL_SCRIPT_DIR");
 });
 
 if (!fs.existsSync(getPostInstallScriptDir())) {
@@ -61,7 +61,8 @@ if (!fs.existsSync(getPostInstallScriptDir())) {
 //Host the post install scripts directory
 var app = express();
 app.use('/', express.static(getPostInstallScriptDir()));
-app.listen(config.get("PORT"), function () {
+var PORT = config.get("PORT");
+app.listen(PORT, function () {
     console.log("POST INSTALL SCRIPT server listening on port: " + PORT)
 });
 
@@ -102,34 +103,45 @@ function getPostInstallScriptUrl(jobId) {
 
 
 DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
-    var dest = fs.createWriteStream(getPostInstallScriptPath(jobId));
-    opts = _.extend({}, startupArguments, opts); // we copy the options object here so if it gets mutated externally its not an issue
+    console.log("Write install script called");
+    try {
+        var self = this;
 
-    if(!opts.input_jar){
-        throw new Error("Input Jar required");
+        var dest = fs.createWriteStream(getPostInstallScriptPath(jobId));
+        opts = _.extend({}, startupArguments, opts); // we copy the options object here so if it gets mutated externally its not an issue
+
+        if (!opts.input_jar) {
+            cb(new Error("Input Jar required"));
+        }
+        if (!opts.input_file) {
+            cb(new Error("Input file required"));
+        }
+
+        if (!opts.cluster_name) opts.cluster_name = jobId;
+        if (!opts.output_data_container) opts.output_data_container = opts.input_data_container + "-out";
+
+        var callBackOnce = _.once(cb);
+        dest.on("error", function(err){
+            callBackOnce(err);
+        });
+        dest.on("finish", function () {
+            console.log("finished writing post install script");
+            self._postInstallScriptUrl = getPostInstallScriptUrl(jobId);
+            callBackOnce();
+        });
+        getPostInstallScriptStream(opts).pipe(dest);
+    } catch(e){
+        cb(e);
     }
-    if(!opts.input_file){
-        throw new Error("Input file required");
-    }
-
-    if(!opts.cluster_name) opts.cluster_name = jobId;
-    if(!opts.output_data_container) opts.output_data_container = opts.input_data_container + "-out";
-
-
-    getPostInstallScriptStream(opts).pipe(dest);
-    var callBackOnce = _.once(cb);
-    dest.on("error", _.partial(callBackOnce));
-    dest.on("end", function () {
-        callBackOnce(getPostInstallScriptUrl(jobId));
-    });
 };
 
-
-DataCloud.prototype.startCluster = function (opts) {v
+DataCloud.prototype.startCluster = function (opts, cb) {
+    console.log("StartCluster called");
     var envVars = {
         "OS_USERNAME": opts.username,
         "OS_PASSWORD": opts.password,
-        "OS_REGION_NAME": opts.region || "LON"
+        "OS_REGION_NAME": opts.region || "LON",
+        "post_install_script" : this._postInstallScriptUrl
     };
 
     _.extend(envVars, opts); // copy options to local var for safety
@@ -142,9 +154,10 @@ DataCloud.prototype.startCluster = function (opts) {v
     var process = PythonShell.run('cbd_script.py', _.extend(this.config, {
         env: envVars
     }), function (err, results) {
-        if (err) throw err;
+        if (err) cb(err);
         // results is an array consisting of messages collected during execution
         console.log('results: %j', results);
+        cb();
     });
     process.on("message", console.log);
 
