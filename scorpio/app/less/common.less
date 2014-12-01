@@ -9,6 +9,7 @@ div {
   width: 100%;
   flex-direction: row;
   flex-wrap: nowrap;
+  flex-shrink: 0;
   .right {
     justify-content: flex-end;
   }
@@ -77,6 +78,20 @@ ol {
       opacity: 1.0;
     }
     top: 0;
+  }
+
+  .modal-dialog {
+    overflow-y: auto;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    .modal-spacer {
+      flex-grow:1
+    }
+
+    .modal-content {
+      flex-shrink: 1;
+    }
   }
 }
 

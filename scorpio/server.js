@@ -13,19 +13,34 @@ var express = require('express'),
     _ = require('underscore'),
 //    nodemailer = require("nodemailer"),
     fs = require('fs'),
-    async = require('async'),
-    argv = require('optimist').argv,
     Busboy = require('busboy'),
     CloudFileStream = require('cloudfs'),
     session = require('express-session'),
     crypto = require("cryptiles"),
     bodyParser = require('body-parser'),
     DataCloud = require('datacloud'),
-    uuidProvider = require('node-uuid')
+    uuidProvider = require('node-uuid'),
+    config = require('config')
     ;
 
 // TODO: Accept a command line argument to set config file
-var config = JSON.parse(fs.readFileSync('config/serverConfig.json'));
+config = (function(){ //self executing function for closure
+    var config = require('config');
+    var moduleName = 'scorpio';
+    var defaults = {
+        PORT: 8000,
+        jarContainer: "z_DO_NOT_DELETE_scorpio_JARS"
+    };
+    config.util.setModuleDefaults(moduleName, defaults);
+    return {
+        get : function(property){
+            if(_.isUndefined(defaults[property])){
+                console.warn("No default set for property " + property + " in module " + moduleName);
+            }
+            return config.get(moduleName + '.' + property);
+        }
+    }
+})();
 
 
 //var smtpTransport = nodemailer.createTransport("SMTP", config.mail);
@@ -67,9 +82,11 @@ app.use('/bower_components', express.static(__dirname + "/bower_components"));
 app.use('/dist', express.static(__dirname + "/dist"));
 
 // TODO: Config
-var port = argv.port || config.server.port;
-app.listen(port);
-console.log("Listenting on port " + port);
+var port = config.get("PORT");
+app.listen(port, function(){
+    console.log("Listening on port " + port);
+});
+
 
 ["services", "controllers", "directives", "filters", "classes"].forEach(function (thing) {
     app.get("/app/" + thing, function (req, res) {
@@ -146,7 +163,6 @@ app.get("/containers/:container/:file", function (req, res) {
             res.json(file);
         }
     });
-
 });
 
 app.get("/containers/:container/download/:file", function (req, res) {
@@ -170,32 +186,42 @@ app.delete("/containers/:container/:file", function (req, res) {
 });
 
 app.post("/clusters", formBodyParser, function (req, res) {
-    var postBody = req.body;
+    var postBody = _.omit(req.body, function(value, key, object){
+        return value === "" || _.isNull(value) || _.isUndefined(value) || _.isNaN(value);
+    });
     var dataCloud = new DataCloud();
     var credentials = getRackspaceCredentials(req);
     var jobId = uuidProvider.v1();
-    var outFile = req.rackspaceStorage.getFileAsWritableStream(jobId, config.containers.startupScriptContainer);
 
-    var postInstallScriptStream = dataCloud.getPostInstallScriptStream(
+    dataCloud.writePostInstallScript(
+        jobId,
         _.extend({
-            jar_container: config.containers.jarContainer,
+            jar_container: config.get("jarContainer"),
             cluster_name: jobId
-        }, postBody)
-    );
-    postInstallScriptStream.pipe(outFile);
+        }, postBody),
+        function(err){
+            if(!handleError(res, err)){
+                console.log("wrote install script for job: " + jobId);
+                try {
+                    dataCloud.startCluster(
+                        _.extend(postBody,credentials),
+                        function(err){
+                            if(!handleError(res, err)){
+                                //TODO redirect to job started state
+                                res.redirect("~/#/");
+                                //res.redirect("./#/jobStarted");
+                            }
+                        }
 
-    postInstallScriptStream.on("error", _.partial(handleError, res))
-    outFile.on("error", _.partial(handleError, res))
-
-    outFile.on('end', function () {
-        console.log("wrote install script for job: " + jobId)
-        try {
-            dataCloud.startCluster(_.extend(postBody, credentials));
-        } catch (e) {
-            console.error("error triggering cluster");
-            handleError(res, e);
+                    );
+                } catch (e) {
+                    console.error("error triggering cluster");
+                    handleError(res, e);
+                }
+            }
         }
-    });
+    );
+
 });
 
 
@@ -203,24 +229,19 @@ app.post("/login", formBodyParser, function (req, res) {
     req.session.rackspace = req.body;
     if (req.session.rackspace.username === "TEST") {
         console.log("TEST MODE");
-        res.redirect("/")
+        res.redirect("/");
         return;
     }
     setRackspaceStorage(req);
-    req.rackspaceStorage.createContainerIfNotExists(config.containers.jarContainer, function (err, container) {
+    req.rackspaceStorage.createContainerIfNotExists(config.get("jarContainer"), function (err, container) {
         if (err) {
             if (err.statusCode === 401 || err.failcode === "Unauthorized") {
-                req.session.destroy()
+                req.session.destroy();
                 return res.redirect("/login?error=");
             }
             throw err;
         } else {
             console.log("jar container found");
-            var rackspace = req.rackspaceStorage;
-            _.forEach(config.containers, function (value, key) {
-                rackspace.createContainerIfNotExists(value); //fire these requests off, assume they work
-            });
-
             res.redirect("/");
         }
     });

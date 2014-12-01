@@ -15,9 +15,9 @@ define(['angular', 'controllersModule'],
                 return $scope.selected.value;
             };
 
-            $scope.linkJarToContainer = function (info) {
-                $scope.go("startJob");
-            }
+            $scope.linkJarToContainer = function (params) {
+                $state.go("linkJarToContainer", params);
+            };
 
         });
 
