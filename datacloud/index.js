@@ -160,7 +160,7 @@ DataCloud.prototype.startCluster = function (opts, cb) {
         cb();
     });
     process.on("message", console.log);
-
+    console.log("python script started");
 };
 
 

@@ -1,4 +1,14 @@
-#!/bin/shrack_region="LON"input_data_container="Container c"output_folder="results"status_file="COMPLETED"mr_options=""jar_container="z_DO_NOT_DELETE_scorpio_JARS"cluster_name="b4a23dd0-772e-11e4-b743-69fbc673910e"input_jar="JAR 1"input_file="input.txt"output_data_container="Container c-out"## Shebang line deliberately missing because this is a template
+#!/bin/shrack_region="LON"
+input_data_container="pubmed-data"
+output_folder="results"
+status_file="COMPLETED"
+mr_options=""
+jar_container="z_DO_NOT_DELETE_scorpio_JARS"
+cluster_name="testJob"
+input_jar="bottle-all.jar"
+input_file="pharmacogeneticsData"
+output_data_container="pubmed-data-out"
+## Shebang line deliberately missing because this is a template
 
 
 #
