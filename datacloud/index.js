@@ -43,7 +43,7 @@ DataCloud.prototype.getPostInstallScriptStream = function(opts){
 
     s.push("#!/bin/sh");
     _.forEach(args, function(value, key){
-        s.push(key + "=\"" + value.toString() +"\"") //TODO escape quotations & etc!
+        s.push(key + "=\"" + value.toString() +"\""); //TODO escape quotations & etc!
     });
     s.push(null);
 
@@ -68,7 +68,7 @@ DataCloud.prototype.startCluster = function (opts) {
 
     _.extend(envVars, opts);
 
-    var process = PythonShell.run('cbd_script.py', _.extend(this.config, {
+    var process = PythonShell.run('cbd_fire_and_forget.py', _.extend(this.config, {
         env: envVars
     }), function (err, results) {
         if (err) throw err;
