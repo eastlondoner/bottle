@@ -28,7 +28,8 @@ config = (function(){ //self executing function for closure
     var config = require('config');
     var moduleName = 'scorpio';
     var defaults = {
-        PORT: 8000
+        PORT: 8000,
+        jarContainer: "z_DO_NOT_DELETE_scorpio_JARS"
     };
     config.util.setModuleDefaults(moduleName, defaults);
     return {
@@ -185,7 +186,9 @@ app.delete("/containers/:container/:file", function (req, res) {
 });
 
 app.post("/clusters", formBodyParser, function (req, res) {
-    var postBody = req.body;
+    var postBody = _.omit(req.body, function(value, key, object){
+        return value === "" || _.isNull(value) || _.isUndefined(value) || _.isNaN(value);
+    });
     var dataCloud = new DataCloud();
     var credentials = getRackspaceCredentials(req);
     var jobId = uuidProvider.v1();
@@ -196,17 +199,21 @@ app.post("/clusters", formBodyParser, function (req, res) {
             jar_container: config.get("jarContainer"),
             cluster_name: jobId
         }, postBody),
-        function(err, postIntallScriptUrl){
+        function(err){
             if(!handleError(res, err)){
                 console.log("wrote install script for job: " + jobId);
                 try {
                     dataCloud.startCluster(
-                        _.extend(postBody,
-                            credentials,
-                            {
-                                "post_install_script" : postIntallScriptUrl
+                        _.extend(postBody,credentials),
+                        function(err){
+                            if(!handleError(res, err)){
+                                //TODO redirect to job started state
+                                res.redirect("~/#/");
+                                //res.redirect("./#/jobStarted");
                             }
-                        ));
+                        }
+
+                    );
                 } catch (e) {
                     console.error("error triggering cluster");
                     handleError(res, e);
