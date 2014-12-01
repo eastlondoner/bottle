@@ -122,6 +122,7 @@ if __name__ == '__main__':
         }}
         if post_install_script:
             body['cluster']["postInitScript"] = post_install_script
+            print("Post Install Script: " + post_install_script)
 
         ##TODO: if the account big data node limit is reached we get an error
 
