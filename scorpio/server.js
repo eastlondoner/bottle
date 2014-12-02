@@ -208,7 +208,7 @@ app.post("/clusters", formBodyParser, function (req, res) {
                         handleError(err);
                     });
                     job.on("auth", function(){
-                        res.redirect("~/#/?jobId="+encodeURIComponent(jobId));
+                        res.redirect("/#/jobs?jobId="+encodeURIComponent(jobId));
                     });
                     job.on("delete", function(){
                         console.log("job " + jobId + " complete!");
