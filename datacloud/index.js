@@ -118,10 +118,10 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
         opts = _.extend({}, startupArguments, opts); // we copy the options object here so if it gets mutated externally its not an issue
 
         if (!opts.input_jar) {
-            cb(new Error("Input Jar required"));
+            return cb(new Error("Input Jar required"));
         }
         if (!opts.input_file) {
-            cb(new Error("Input file required"));
+            return cb(new Error("Input file required"));
         }
 
         if (!opts.cluster_name) opts.cluster_name = jobId;
