@@ -41,7 +41,7 @@ var startupArguments = {
 //    input_file: "flows-10g.tsv", - there is no point having a default of this
 //  jar_container - this is supplied from elsewhere
 //    output_data_container: "benchmark-out",
-    output_folder: "results",
+//    output_folder: "results",  -use job id by default
     status_file: "COMPLETED",
 //    input_jar: "FlowsCount.jar", - there is no point having a default of this
     mr_options: ""
@@ -116,6 +116,10 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
 
         var dest = fs.createWriteStream(getPostInstallScriptPath(jobId));
         opts = _.extend({}, startupArguments, opts); // we copy the options object here so if it gets mutated externally its not an issue
+
+        //Set the output folder to use the job id by default
+        if(!opts.output_folder) opts.output_folder = jobId;
+
 
         if (!opts.input_jar) {
             return cb(new Error("Input Jar required"));
