@@ -203,7 +203,7 @@ app.post("/clusters", formBodyParser, function (req, res) {
             if (!handleError(res, err)) {
                 console.log("wrote install script for job: " + jobId);
                 try {
-                    var job = dataCloud.startCluster(jobId, _.extend(postBody, credentials));
+                    var job = dataCloud.startCluster(_.extend(postBody, credentials));
                     job.on("error", function(err){
                         handleError(err);
                     });
