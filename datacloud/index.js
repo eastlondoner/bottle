@@ -88,8 +88,6 @@ function getPostInstallScriptStream(opts) {
     var outStream = new ss();
     var s = new stream.Readable();
 
-    outStream.write(s);
-
     s.push("#!/bin/sh\n");
     _.forEach(opts, function (value, key) {
         var keyStr = key + "=\"" + value.toString() + "\"\n";
@@ -97,6 +95,8 @@ function getPostInstallScriptStream(opts) {
         s.push(keyStr); //TODO escape quotations & etc!
     });
     s.push(null);
+
+    outStream.write(s);
 
     outStream.write(fs.createReadStream(__dirname + "/cbd_postinstall_and_forget_10g.sh"));
     outStream.end();
