@@ -254,6 +254,7 @@ app.get("/logout", function (req, res) {
 
 function handleError(res, error) {
     if (error) {
+        console.error(error);
         var status = 500;
         if (error instanceof Error) {
             if (error.code == "ENOTFOUND") {

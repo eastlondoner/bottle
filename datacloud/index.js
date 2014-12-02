@@ -4,7 +4,8 @@ var PythonShell = require('python-shell'),
     stream = require('stream'),
     ss = require('stream-stream'),
     ip = require('ip'),
-    express = require('express');
+    express = require('express'),
+    EventEmitter = require('events').EventEmitter;
 
 var config = (function(){ //self executing function for closure
     var config = require('config');
