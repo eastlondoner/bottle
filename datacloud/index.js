@@ -146,7 +146,8 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
     }
 };
 
-DataCloud.prototype.startCluster = function (opts, cb) {
+DataCloud.prototype.startCluster = function (opts) {
+    var eventEmitter = new EventEmitter();
     console.log("StartCluster called");
     var envVars = {
         "OS_USERNAME": opts.username,
@@ -165,13 +166,28 @@ DataCloud.prototype.startCluster = function (opts, cb) {
     var process = PythonShell.run('cbd_fire_and_forget.py', _.extend(this.config, {
         env: envVars
     }), function (err, results) {
-        if (err) return cb(err);
+        if (err) return eventEmitter.emit("error", err);
+        eventEmitter.emit("finish");
         // results is an array consisting of messages collected during execution
         console.log('results: %j', results);
-        cb();
     });
-    process.on("message", console.log);
+    process.on("message", function(message){
+        console.log(message);
+        if(message.indexOf("Authentication was successful") != -1){
+            return eventEmitter.emit("auth");
+        }
+        if(message.indexOf("Creating profile") != -1){
+            return eventEmitter.emit("profile");
+        }
+        if(message.indexOf("Building cluster") != -1){
+            return eventEmitter.emit("build");
+        }
+        if(message.indexOf("Cluster was deleted") != -1){
+            return eventEmitter.emit("deleted");
+        }
+    });
     console.log("python script started");
+    return eventEmitter;
 };
 
 

@@ -203,16 +203,16 @@ app.post("/clusters", formBodyParser, function (req, res) {
             if (!handleError(res, err)) {
                 console.log("wrote install script for job: " + jobId);
                 try {
-                    dataCloud.startCluster(
-                        _.extend(postBody, credentials),
-                        function (err) {
-                            if (!handleError(res, err)) {
-                                //TODO redirect to job started state
-                                res.redirect("~/#/");
-                                //res.redirect("./#/jobStarted");
-                            }
-                        }
-                    );
+                    var job = dataCloud.startCluster(jobId, _.extend(postBody, credentials));
+                    job.on("error", function(err){
+                        handleError(err);
+                    });
+                    job.on("auth", function(){
+                        res.redirect("~/#/?jobId="+encodeURIComponent(jobId));
+                    });
+                    job.on("delete", function(){
+                        console.log("job " + jobId + " complete!");
+                    });
                 } catch (e) {
                     console.error("error triggering cluster");
                     handleError(res, e);
