@@ -88,7 +88,7 @@ function getPostInstallScriptStream(opts) {
     var outStream = new ss();
     var s = new stream.Readable();
 
-    s.push("#!/bin/sh");
+    s.push("#!/bin/sh\n");
     _.forEach(opts, function (value, key) {
         s.push(key + "=\"" + value.toString() + "\"\n") //TODO escape quotations & etc!
     });
