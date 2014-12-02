@@ -71,8 +71,12 @@ var getServiceNetIpAddress = _.once(function () {
     return ip.address('private');
 });
 
+function getPostInstallScriptFilename(jobId) {
+    return jobId + ".sh";
+}
+
 function getPostInstallScriptPath(jobId) {
-    return getPostInstallScriptDir() + jobId + ".sh";
+    return getPostInstallScriptDir() + getPostInstallScriptFilename(jobId);
 }
 
 function DataCloud(config) {
@@ -98,7 +102,7 @@ function getPostInstallScriptStream(opts) {
 
 
 function getPostInstallScriptUrl(jobId) {
-    return "http://" + getServiceNetIpAddress() + ":" + PORT + "/" + getPostInstallScriptPath(jobId);
+    return "http://" + getServiceNetIpAddress() + ":" + PORT + "/" + getPostInstallScriptFilename(jobId);
 }
 
 
