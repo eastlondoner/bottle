@@ -1,0 +1,15 @@
+<ol>
+    <li ng-repeat="job in jobs"
+        ng-click="jobSelected(job.id)"
+        class="column-entry"
+        toggle-selected
+        model="job">
+        {{ job.name }}
+    </li>
+</ol>
+<ol>
+    <li class="icon-delete">
+        <!-- This is just a placeholder to show we could have actions here -->
+        <a ng-click="abortJob({ jarId: selected.value.id })">Abort</a>
+    </li>
+</ol>

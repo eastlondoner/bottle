@@ -94,7 +94,8 @@ mv $input_jar /tmp
 # Execute MR job
 #
 echo -e "\n\n[$(date)]   Executing the MR job"
-su - hdfs -c 'hdfs dfs -mkdir /user/root; hdfs dfs -chown root /user/root'
+su - hdfs -c 'hdfs dfs -mkdir /user/root'
+su - hdfs -c 'hdfs dfs -chown root /user/root'
 hadoop jar /tmp/$input_jar $mr_options swift://$input_data_container.rack-$(echo ${rack_region,,})/$input_file swift://$output_data_container.rack-$(echo ${rack_region,,})/$output_folder
 
 #

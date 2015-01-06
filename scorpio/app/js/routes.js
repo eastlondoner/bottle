@@ -56,6 +56,25 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
+            .state('listJobs', {
+                parent: 'scorpioBase',
+                url: 'jobs',
+                resolve: {
+                    jobs: function (jobService, $stateParams) {
+                        return jobService.getJobs();
+                    }
+                },
+                views: {
+                    secondList: {
+                        templateUrl: 'partials/listJobs.html',
+                        controller: 'ListJobsController'
+                    },
+                    thirdList: {
+                        template: ""
+                    }
+                }
+            })
+
             .state('uploadJar', {
                 parent: 'listJars',
                 url: '/upload',

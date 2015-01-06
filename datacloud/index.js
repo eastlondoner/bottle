@@ -4,7 +4,8 @@ var PythonShell = require('python-shell'),
     stream = require('stream'),
     ss = require('stream-stream'),
     ip = require('ip'),
-    express = require('express');
+    express = require('express'),
+    EventEmitter = require('events').EventEmitter;
 
 var config = (function(){ //self executing function for closure
     var config = require('config');
@@ -41,7 +42,7 @@ var startupArguments = {
 //    input_file: "flows-10g.tsv", - there is no point having a default of this
 //  jar_container - this is supplied from elsewhere
 //    output_data_container: "benchmark-out",
-    output_folder: "results",
+//    output_folder: "results",  -use job id by default
     status_file: "COMPLETED",
 //    input_jar: "FlowsCount.jar", - there is no point having a default of this
     mr_options: ""
@@ -71,8 +72,12 @@ var getServiceNetIpAddress = _.once(function () {
     return ip.address('private');
 });
 
+function getPostInstallScriptFilename(jobId) {
+    return jobId + ".sh";
+}
+
 function getPostInstallScriptPath(jobId) {
-    return getPostInstallScriptDir() + jobId + ".sh";
+    return getPostInstallScriptDir() + getPostInstallScriptFilename(jobId);
 }
 
 function DataCloud(config) {
@@ -84,13 +89,16 @@ function getPostInstallScriptStream(opts) {
     var outStream = new ss();
     var s = new stream.Readable();
 
-    s.push("#!/bin/sh");
+    s.push("#!/bin/sh\n");
     _.forEach(opts, function (value, key) {
-        s.push(key + "=\"" + value.toString() + "\"\n") //TODO escape quotations & etc!
+        var keyStr = key + "=\"" + value.toString() + "\"\n";
+        console.log("Writing post install script property: " + keyStr);
+        s.push(keyStr); //TODO escape quotations & etc!
     });
     s.push(null);
 
     outStream.write(s);
+
     outStream.write(fs.createReadStream(__dirname + "/cbd_postinstall_and_forget_10g.sh"));
     outStream.end();
     return outStream;
@@ -98,7 +106,7 @@ function getPostInstallScriptStream(opts) {
 
 
 function getPostInstallScriptUrl(jobId) {
-    return "http://" + getServiceNetIpAddress() + ":" + PORT + "/" + getPostInstallScriptPath(jobId);
+    return "http://" + getServiceNetIpAddress() + ":" + PORT + "/" + getPostInstallScriptFilename(jobId);
 }
 
 
@@ -110,11 +118,15 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
         var dest = fs.createWriteStream(getPostInstallScriptPath(jobId));
         opts = _.extend({}, startupArguments, opts); // we copy the options object here so if it gets mutated externally its not an issue
 
+        //Set the output folder to use the job id by default
+        if(!opts.output_folder) opts.output_folder = jobId;
+
+
         if (!opts.input_jar) {
-            cb(new Error("Input Jar required"));
+            return cb(new Error("Input Jar required"));
         }
         if (!opts.input_file) {
-            cb(new Error("Input file required"));
+            return cb(new Error("Input file required"));
         }
 
         if (!opts.cluster_name) opts.cluster_name = jobId;
@@ -135,7 +147,8 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
     }
 };
 
-DataCloud.prototype.startCluster = function (opts, cb) {
+DataCloud.prototype.startCluster = function (opts) {
+    var eventEmitter = new EventEmitter();
     console.log("StartCluster called");
     var envVars = {
         "OS_USERNAME": opts.username,
@@ -154,13 +167,28 @@ DataCloud.prototype.startCluster = function (opts, cb) {
     var process = PythonShell.run('cbd_fire_and_forget.py', _.extend(this.config, {
         env: envVars
     }), function (err, results) {
-        if (err) return cb(err);
+        if (err) return eventEmitter.emit("error", err);
+        eventEmitter.emit("finish");
         // results is an array consisting of messages collected during execution
         console.log('results: %j', results);
-        cb();
     });
-    process.on("message", console.log);
-
+    process.on("message", function(message){
+        console.log(message);
+        if(message.indexOf("Authentication was successful") != -1){
+            return eventEmitter.emit("auth");
+        }
+        if(message.indexOf("Creating profile") != -1){
+            return eventEmitter.emit("profile");
+        }
+        if(message.indexOf("Building cluster") != -1){
+            return eventEmitter.emit("build");
+        }
+        if(message.indexOf("Cluster was deleted") != -1){
+            return eventEmitter.emit("deleted");
+        }
+    });
+    console.log("python script started");
+    return eventEmitter;
 };
 
 

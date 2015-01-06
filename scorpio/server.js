@@ -24,7 +24,7 @@ var express = require('express'),
     ;
 
 // TODO: Accept a command line argument to set config file
-config = (function(){ //self executing function for closure
+config = (function () { //self executing function for closure
     var config = require('config');
     var moduleName = 'scorpio';
     var defaults = {
@@ -33,8 +33,8 @@ config = (function(){ //self executing function for closure
     };
     config.util.setModuleDefaults(moduleName, defaults);
     return {
-        get : function(property){
-            if(_.isUndefined(defaults[property])){
+        get: function (property) {
+            if (_.isUndefined(defaults[property])) {
                 console.warn("No default set for property " + property + " in module " + moduleName);
             }
             return config.get(moduleName + '.' + property);
@@ -87,7 +87,7 @@ app.use('/dist', express.static(__dirname + "/dist"));
 
 // TODO: Config
 var port = config.get("PORT");
-app.listen(port, function(){
+app.listen(port, function () {
     console.log("Listening on port " + port);
 });
 
@@ -188,34 +188,33 @@ app.delete("/containers/:container/:file", function (req, res) {
 });
 
 app.post("/clusters", formBodyParser, function (req, res) {
-    var postBody = _.omit(req.body, function(value, key, object){
+    var postBody = _.omit(req.body, function (value, key, object) {
         return value === "" || _.isNull(value) || _.isUndefined(value) || _.isNaN(value);
     });
     var dataCloud = new DataCloud();
     var credentials = getRackspaceCredentials(req);
     var jobId = uuidProvider.v1();
 
+    if (!postBody.cluster_name) postBody.cluster_name = jobId;
     dataCloud.writePostInstallScript(
         jobId,
         _.extend({
-            jar_container: config.get("jarContainer"),
-            cluster_name: jobId
+            jar_container: config.get("jarContainer")
         }, postBody),
-        function(err){
-            if(!handleError(res, err)){
+        function (err) {
+            if (!handleError(res, err)) {
                 console.log("wrote install script for job: " + jobId);
                 try {
-                    dataCloud.startCluster(
-                        _.extend(postBody,credentials),
-                        function(err){
-                            if(!handleError(res, err)){
-                                //TODO redirect to job started state
-                                res.redirect("~/#/");
-                                //res.redirect("./#/jobStarted");
-                            }
-                        }
-
-                    );
+                    var job = dataCloud.startCluster(_.extend(postBody, credentials));
+                    job.on("error", function(err){
+                        handleError(err);
+                    });
+                    job.on("auth", function(){
+                        res.redirect("/#/jobs?jobId="+encodeURIComponent(jobId));
+                    });
+                    job.on("delete", function(){
+                        console.log("job " + jobId + " complete!");
+                    });
                 } catch (e) {
                     console.error("error triggering cluster");
                     handleError(res, e);
@@ -256,6 +255,7 @@ app.get("/logout", function (req, res) {
 
 function handleError(res, error) {
     if (error) {
+        console.error(error);
         var status = 500;
         if (error instanceof Error) {
             if (error.code == "ENOTFOUND") {
