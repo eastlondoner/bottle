@@ -15,6 +15,10 @@ define(
         if (TEST) return;
 
         function alertError(response, detail) {
+            if(response.status === 401){
+                //We handle this elsewhere!
+                return;
+            }
             alert(
                     detail + "\n" +
                     "Received error status: " + response.status + "\n" +

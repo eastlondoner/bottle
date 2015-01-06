@@ -1,6 +1,10 @@
 define(['angular', 'app'], function (angular, app) {
     'use strict';
-    return app.config(['$stateProvider' , '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+    return app.config(['$stateProvider' , '$urlRouterProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $httpProvider) {
+
+        $httpProvider.interceptors.push(function($injector){
+            return $injector.get('AuthInterceptor')
+        });
 
         $stateProvider
             .state('base', {

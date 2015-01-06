@@ -56,25 +56,29 @@ app.use(session({
     cookie: { secure: false, maxAge: 600000 }
 }));
 
-//redirect to login if you hve no session
 function getRackspaceCredentials(req) {
     return {username: req.session.rackspace.username, password: req.session.rackspace.password};
 }
 function setRackspaceStorage(req) {
     req.rackspaceStorage = new CloudFileStream(getRackspaceCredentials(req));
 }
+
+//redirect to login if you hve no session
 app.use(function (req, res, next) {
     if (!req.session || !req.session.rackspace) {
         if (req.path == '/login') {
             return next();
         }
-        res.redirect("/login");
+        if (req.path == '/') {
+            return res.redirect('/login')
+        }
+        res.status(401);
+        res.sendfile(__dirname + "/app/partials/login.html");
     } else {
         setRackspaceStorage(req);
         next();
     }
 });
-
 
 // Server the files for the client side app
 app.use('/', express.static(__dirname + "/app"));
@@ -86,7 +90,6 @@ var port = config.get("PORT");
 app.listen(port, function(){
     console.log("Listening on port " + port);
 });
-
 
 ["services", "controllers", "directives", "filters", "classes"].forEach(function (thing) {
     app.get("/app/" + thing, function (req, res) {
@@ -144,7 +147,6 @@ app.get("/containers", function (req, res) {
         }
     })
 });
-
 
 app.put("/containers/:container", function (req, res) {
     var containerName = req.params.container;
@@ -221,7 +223,6 @@ app.post("/clusters", formBodyParser, function (req, res) {
             }
         }
     );
-
 });
 
 
