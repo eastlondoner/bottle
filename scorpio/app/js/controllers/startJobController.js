@@ -3,7 +3,10 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
     /**
      * Allow the user to delete data files from a container
      */
-    controllers.controller('StartJobController', function ($scope, $state, jar, container, iaModalSheet, containerService, iaLoadingSpinner) {
+    controllers.controller('StartJobController', function ($scope, $state, jar, container, files, iaModalSheet, containerService, iaLoadingSpinner) {
+
+        $scope.files = files;
+        $scope.advancedMode = false;
 
         $scope.job = {
             form: {}

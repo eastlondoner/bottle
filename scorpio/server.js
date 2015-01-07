@@ -53,7 +53,8 @@ app.use(express.logger());
 
 app.use(session({
     secret: crypto.randomString(36),
-    cookie: { secure: false, maxAge: 600000 }
+    //TODO: secure the cookie
+    cookie: { secure: false, maxAge: 30 *60 * 1000 }
 }));
 
 function getRackspaceCredentials(req) {

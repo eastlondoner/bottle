@@ -9,7 +9,7 @@
 </ol>
 <ol>
     <li class="icon-join">
-        <a ng-click="linkJarToContainer({ jarId: selected.value.id })">Link to container</a>
+        <a class="clickable" ng-click="linkJarToContainer({ jarId: selected.value.id })">Link to container</a>
     </li>
     <li class="icon-upload">
         <a ui-sref="uploadJar">Upload JAR file</a>
@@ -18,6 +18,6 @@
         <a ng-href="/containers/{{jarContainer.id}}/download/{{selected.value.id}}" download>Download JAR file</a>
     </li>
     <li class="icon-delete">
-        <a ng-click="deleteJar({ jarId: selected.value.id })">Delete JAR file</a>
+        <a class="clickable" ng-click="deleteJar({ jarId: selected.value.id })">Delete JAR file</a>
     </li>
 </ol>

@@ -156,7 +156,7 @@ define(['angular', 'app'], function (angular, app) {
             })
 
             .state('startJob', {
-                parent: 'loggedIn',
+                parent: 'listJobs',
                 url: '/job/:jarId/:containerId',
                 resolve: {
                     container: function (containerService, $stateParams) {
@@ -164,6 +164,9 @@ define(['angular', 'app'], function (angular, app) {
                     },
                     jar: function (jarService, $stateParams) {
                         return jarService.getJar($stateParams.jarId);
+                    },
+                    files: function (containerService, $stateParams) {
+                        return containerService.getFilesInContainer($stateParams.containerId);
                     }
                 },
                 views: {
