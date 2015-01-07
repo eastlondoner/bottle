@@ -1,12 +1,51 @@
-define(['angular', 'controllersModule'], function (angular, controllers) {
+define(['angular', 'controllersModule', 'File'], function (angular, controllers, File) {
     'use strict';
-    /**
-     * Allow the user to find a patient via their number and confirm
-     * that they have the correct patient
-     */
+
+
     controllers.controller('ListDataFilesController', function ($scope, $rootScope, $state, files, iaLoadingSpinner, iaModalSheet) {
         $scope.containerId = $state.params.containerId;
         $scope.files = files;
+        var folderTree = File.getFolderTree($scope.containerId);
+
+        $scope.navigation = {
+            currentFolder: ""
+        };
+
+        function getFolders() {
+            var parts = $scope.navigation.currentFolder.split('/');
+            if ( $scope.navigation.currentFolder != "") {
+                return _.chain(parts).reduce(function (memo, part) {
+                    return folderTree[part]
+                }, folderTree).keys().value();
+            }
+            return _.keys(folderTree);
+        }
+
+        function setFolders(){
+            $scope.folders = getFolders();
+        }
+
+        $scope.expandFolder = function(folder){
+            if($scope.navigation.currentFolder == ""){
+                $scope.navigation.currentFolder = folder;
+            } else {
+                $scope.navigation.currentFolder += '/' + folder;
+            }
+        };
+        $scope.goToRootFolder = function(){
+            $scope.navigation.currentFolder = "";
+        };
+        $scope.upOneFolder = function(){
+            var parts = $scope.navigation.currentFolder.split('/');
+            parts.pop();
+            $scope.navigation.currentFolder = parts.join('/');
+        };
+
+        $scope.$watch('navigation.currentFolder', function (newVal, oldVal) {
+            if (newVal != oldVal) {
+                setFolders();
+            }
+        });
 
         $scope.selected = {value: null};
         $scope.getSelected = function () {
@@ -35,5 +74,7 @@ define(['angular', 'controllersModule'], function (angular, controllers) {
             $state.go('deleteDataFile', {fileId: $scope.getSelected().id}).
                 then(iaLoadingSpinner.hide);
         };
+
+        setFolders();
     });
 });

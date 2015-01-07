@@ -68,6 +68,26 @@ define(
                             });
                     });
                 },
+                createContainer: function (containerId, cb) {
+                    if (!cb) cb = _.identity;
+                    return $http.put("/containers/" + containerId).
+                        success(_.partial(cb, null)).
+                        catch(function (response) {
+                            alertError(response, "Creating container: " + containerId);
+                            cb(response);
+                            return null;
+                        });
+                },
+                deleteContainer: function (containerId, cb) {
+                    if (!cb) cb = _.identity;
+                    return $http.delete("/containers/" + containerId).
+                        success(_.partial(cb, null)).
+                        catch(function (response) {
+                            alertError(response, "Deleting container: " + containerId);
+                            cb(response);
+                            return null;
+                        });
+                },
                 deleteFileInContainer: function (fileId, containerId, cb) {
                     if (!cb) cb = _.identity;
                     return $http.delete("/containers/" + containerId + "/" + fileId).

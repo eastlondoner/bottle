@@ -110,6 +110,42 @@ define(['angular', 'app'], function (angular, app) {
                 }
             })
 
+            .state('deleteContainer', {
+                parent: 'listContainers',
+                url: '/delete/:containerId',
+                resolve: {
+                    container: function (containerService, $stateParams) {
+                        return containerService.getContainer($stateParams.containerId);
+                    }
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'DeleteContainerController'
+                    },
+                    '@deleteContainer': {
+                        templateUrl: 'partials/deleteContainerModal.html'
+                    }
+                }
+            })
+
+            .state('createContainer', {
+                parent: 'listContainers',
+                url: '/create',
+                resolve: {
+
+                },
+                views: {
+                    'modalSheet@loggedIn': {
+                        templateUrl: 'partials/confirmModal.html',
+                        controller: 'CreateContainerController'
+                    },
+                    '@createContainer': {
+                        templateUrl: 'partials/createContainerModal.html'
+                    }
+                }
+            })
+
 
             .state('linkContainerToJar', {
                 parent: 'listContainers',

@@ -12,7 +12,7 @@ define("Job", ['underscore'], function () {
     }
 
     Job.prototype.validate = function () {
-        var props = ['name', 'id'];
+        var props = _.chain(this).pick(['name', 'id']).values().value();
         var checkTypes = _.every(props, _.isString);
         var checkNotEmpty = !_.some(props, _.isEmpty);
         return checkTypes && checkNotEmpty;

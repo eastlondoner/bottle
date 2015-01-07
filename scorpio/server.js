@@ -154,6 +154,7 @@ app.put("/containers/:container", function (req, res) {
     req.rackspaceStorage.createContainer(containerName, function (err, container) {
         if (!handleError(res, err)) {
             res.status(201);
+            res.json(container);
         }
     })
 });
@@ -175,6 +176,17 @@ app.get("/containers/:container/download/:file", function (req, res) {
         handleError(res, err)
     });
     stream.pipe(res);
+});
+
+app.delete("/containers/:container", function (req, res) {
+    var containerName = req.params.container;
+    var fileName = req.params.file;
+    req.rackspaceStorage.deleteContainer(containerName, function (err) {
+        if (!handleError(res, err)) {
+            res.status(204);
+        }
+        res.end();
+    });
 });
 
 app.delete("/containers/:container/:file", function (req, res) {

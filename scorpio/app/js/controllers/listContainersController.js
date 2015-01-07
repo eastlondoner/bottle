@@ -15,9 +15,11 @@ define(
             $scope.containers = containers;
 
             $scope.selected = {value: null};
-            $scope.getSelected = function () {
+            function getSelectedContainer() {
                 return $scope.selected.value;
             }
+
+            $scope.getSelected = getSelectedContainer;
 
 
             $scope.listDataFiles = function (container) {
@@ -31,6 +33,13 @@ define(
                 iaLoadingSpinner.show();
                 $state.go('createContainer', {}).
                     then(iaLoadingSpinner.hide);
+            };
+
+            $scope.deleteSelectedContainer = function () {
+                iaLoadingSpinner.show();
+                $state.go('deleteContainer', {
+                    containerId: getSelectedContainer().id
+                }).then(iaLoadingSpinner.hide);
             };
 
             $scope.linkContainerToJar = function(params){

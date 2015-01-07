@@ -13,7 +13,7 @@ define("Container",['underscore'], function () {
     }
 
     Container.prototype.validate = function () {
-        var props = ['id','name'];
+        var props = _.chain(this).pick(['id','name']).values().value();
         var checkTypes = _.every(props, _.isString);
         var checkNotEmpty = !_.some(props, _.isEmpty);
         return checkTypes && checkNotEmpty;
