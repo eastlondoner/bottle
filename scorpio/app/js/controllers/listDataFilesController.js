@@ -15,7 +15,7 @@ define(['angular', 'controllersModule', 'File'], function (angular, controllers,
             var parts = $scope.navigation.currentFolder.split('/');
             if ( $scope.navigation.currentFolder != "") {
                 return _.chain(parts).reduce(function (memo, part) {
-                    return folderTree[part]
+                    return memo[part];
                 }, folderTree).keys().value();
             }
             return _.keys(folderTree);

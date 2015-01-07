@@ -112,6 +112,7 @@ app.post("/containers/:container", function (req, res) {
 
     var busboy = new Busboy({ headers: req.headers });
     busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+        var filename = filename.replace(/\s/g, "_");
         var uploadStream = req.rackspaceStorage.getFileAsWritableStream(filename, req.params.container);
         console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
         file.on('end', function () {
@@ -169,9 +170,10 @@ app.get("/containers/:container/:file", function (req, res) {
     });
 });
 
-app.get("/containers/:container/download/:file", function (req, res) {
+app.get("/containers/:container/download/:file(*)", function (req, res) {
     var containerName = req.params.container;
     var fileName = req.params.file;
+    console.log("file download requested for: " + fileName);
     var stream = req.rackspaceStorage.getFileAsReadableStream(fileName, containerName, function (err) {
         handleError(res, err)
     });
