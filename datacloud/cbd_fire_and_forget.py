@@ -25,8 +25,15 @@ def auth():
     print("Authenticating to Rackspace cloud...")
 
     try:
-        request_string = '{"auth":{"passwordCredentials":{"username":"' + \
-                         str(username) + '", "password":"' + str(password) + '"}}}'
+        if password and password != "undefined":
+            print "using password auth"
+            request_string = '{"auth":{"passwordCredentials":{"username":"' + \
+                             str(username) + '", "password":"' + str(password) + '"}}}'
+        else:
+            print "using api key auth"
+            request_string = '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"' + \
+                             str(username) + '", "apiKey":"' + str(api_key) + '"}}}'
+
         request = urllib2.Request("https://identity.api.rackspacecloud.com/v2.0/tokens", data=request_string)
         request.add_header('Accept', 'application/json')
         request.add_header('Content-Type', 'application/json')
@@ -58,12 +65,13 @@ if __name__ == '__main__':
 
     print("Deploying to Rackspace cloud...")
     try:
-        if "OS_USERNAME" in os.environ and "OS_PASSWORD" in os.environ and "OS_REGION_NAME" in os.environ:
+        if "OS_USERNAME" in os.environ and ("OS_PASSWORD"  in os.environ or "OS_API_KEY" in os.environ) and "OS_REGION_NAME" in os.environ:
             username = os.environ['OS_USERNAME']
             password = os.environ['OS_PASSWORD']
+            api_key = os.environ['OS_API_KEY']
             region = os.environ['OS_REGION_NAME']
         else:
-            print("OS_USERNAME, OS_PASSWORD, OS_REGION_NAME environment variables are required")
+            print("OS_USERNAME, OS_PASSWORD/OS_API_KEY, OS_REGION_NAME environment variables are required")
             sys.exit(1)
     except Exception, e:
         print(e)

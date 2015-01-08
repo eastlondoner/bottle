@@ -153,6 +153,7 @@ DataCloud.prototype.startCluster = function (opts) {
     var envVars = {
         "OS_USERNAME": opts.username,
         "OS_PASSWORD": opts.password,
+        "OS_API_KEY": opts.apiKey,
         "OS_REGION_NAME": opts.region || "LON",
         "post_install_script" : this._postInstallScriptUrl
     };
