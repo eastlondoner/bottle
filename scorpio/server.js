@@ -50,14 +50,33 @@ var app = express();
 
 app.use(express.logger());
 
-
+//Session middleware
 app.use(session({
     secret: crypto.randomString(36),
     //TODO: secure the cookie
-    cookie: { secure: false, maxAge: 30 *60 * 1000 }
+    cookie: { secure: false, maxAge: 30 * 60 * 1000 }
 }));
+//spoof session if API key provided
+app.use(function (req, res, next) {
+    var authHeader = req.header("authorization");
+    if (authHeader) {
+        var parts = authHeader.split("=");
+        var username = parts[0];
+        var key = parts[1];
+        req.session.rackspace =
+        {
+            username: username,
+            apiKey: key
+        }
+    }
+
+    next()
+});
 
 function getRackspaceCredentials(req) {
+    if (req.session.rackspace.apiKey) {
+        return {username: req.session.rackspace.username, apiKey: req.session.rackspace.apiKey};
+    }
     return {username: req.session.rackspace.username, password: req.session.rackspace.password};
 }
 function setRackspaceStorage(req) {
@@ -221,13 +240,13 @@ app.post("/clusters", formBodyParser, function (req, res) {
                 console.log("wrote install script for job: " + jobId);
                 try {
                     var job = dataCloud.startCluster(_.extend(postBody, credentials));
-                    job.on("error", function(err){
+                    job.on("error", function (err) {
                         handleError(err);
                     });
-                    job.on("auth", function(){
-                        res.redirect("/#/jobs?jobId="+encodeURIComponent(jobId));
+                    job.on("auth", function () {
+                        res.redirect("/#/jobs?jobId=" + encodeURIComponent(jobId));
                     });
-                    job.on("delete", function(){
+                    job.on("delete", function () {
                         console.log("job " + jobId + " complete!");
                     });
                 } catch (e) {
