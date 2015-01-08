@@ -130,6 +130,13 @@ function CloudFileManager(config, opts) {
         })
     };
 
+    this.deleteContainer = function (containerName, cb) {
+        rackspaceStorage.destroyContainer(containerName, function (err, container) {
+            if (handleError(err, 'Error desroying container')) return cb(err);
+            cb(err, container);
+        })
+    };
+
     this.createContainerIfNotExists = function(containerName, cb) {
         rackspaceStorage.getContainer(containerName, function(err, container){
             if(err){

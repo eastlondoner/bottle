@@ -65,13 +65,12 @@ if __name__ == '__main__':
 
     print("Deploying to Rackspace cloud...")
     try:
-        if "OS_USERNAME" in os.environ and ("OS_PASSWORD"  in os.environ or "OS_API_KEY" in os.environ) and "OS_REGION_NAME" in os.environ:
+        if "OS_USERNAME" in os.environ and "OS_PASSWORD" in os.environ and "OS_REGION_NAME" in os.environ:
             username = os.environ['OS_USERNAME']
             password = os.environ['OS_PASSWORD']
-            api_key = os.environ['OS_API_KEY']
             region = os.environ['OS_REGION_NAME']
         else:
-            print("OS_USERNAME, OS_PASSWORD/OS_API_KEY, OS_REGION_NAME environment variables are required")
+            print("OS_USERNAME, OS_PASSWORD, OS_REGION_NAME environment variables are required")
             sys.exit(1)
     except Exception, e:
         print(e)
