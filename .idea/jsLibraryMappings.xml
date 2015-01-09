@@ -2,6 +2,7 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/cloudfs" libraries="{cloudfs node_modules}" />
+    <file url="file://$PROJECT_DIR$/datacloud" libraries="{datacloud node_modules}" />
     <file url="file://$PROJECT_DIR$/pubmedslurp" libraries="{pubmedslurp node_modules}" />
     <file url="file://$PROJECT_DIR$/scorpio" libraries="{scorpio node_modules}" />
     <includedPredefinedLibrary name="Node.js Globals" />
