@@ -142,13 +142,13 @@ from email.mime.text import MIMEText
 def send_email_notification(email_address, jobname):
     #get email config
     if "OS_EMAIL_USE_TLS" in os.environ:
-        use_tls = in os.environ['OS_SMTP_USE_TLS']
+        use_tls = os.environ['OS_SMTP_USE_TLS']
     if "OS_EMAIL_USE_SSL" in os.environ:
-        use_ssl = in os.environ['OS_SMTP_USE_SSL']
+        use_ssl = os.environ['OS_SMTP_USE_SSL']
     if "OS_SMTP_USERNAME" in os.environ:
-        smtp_username = in os.environ['OS_SMTP_USERNAME']
+        smtp_username = os.environ['OS_SMTP_USERNAME']
     if "OS_SMTP_PASSWORD" in os.environ:
-        smtp_password = in os.environ['OS_SMTP_PASSWORD']
+        smtp_password = os.environ['OS_SMTP_PASSWORD']
     # Create a text/plain message
     msg = MIMEText("Hadoop batch job complete: " + str(jobname))
 
@@ -159,9 +159,9 @@ def send_email_notification(email_address, jobname):
     msg['To'] = str(email_address)
 
     if(use_ssl):
-        s = smtplib.SMTP_SSL(smtp_host)¶
+        s = smtplib.SMTP_SSL(smtp_host)
     else:
-        s = smtplib.SMTP(smtp_host)¶
+        s = smtplib.SMTP(smtp_host)
     try:
         # identify ourselves to smtp
         s.ehlo()

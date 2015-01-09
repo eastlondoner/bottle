@@ -139,17 +139,17 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
             if(! smtpConfig.host){
                 console.error("Cannot send emails, no smtp host configured");
             } else {
-                envVars["OS_OWNER_EMAIL"] = opts.owner_email;
-                envVars["OS_SMTP_HOST"] = smtpConfig.host;
+                opts["OS_OWNER_EMAIL"] = opts.owner_email;
+                opts["OS_SMTP_HOST"] = smtpConfig.host;
                 if(smtpConfig.SSL) {
-                    envVars["OS_SMTP_USE_SSL"] = smtpConfig.SSL;
+                    opts["OS_SMTP_USE_SSL"] = smtpConfig.SSL;
                 }
                 if(smtpConfig.TLS) {
-                    envVars["OS_SMTP_USE_TLS"] = smtpConfig.TLS;
+                    opts["OS_SMTP_USE_TLS"] = smtpConfig.TLS;
                 }
                 if(smtpConfig.username) {
-                    envVars["OS_SMTP_USERNAME"] = smtpConfig.username;
-                    envVars["OS_SMTP_PASSWORD"] = smtpConfig.password || "";
+                    opts["OS_SMTP_USERNAME"] = smtpConfig.username;
+                    opts["OS_SMTP_PASSWORD"] = smtpConfig.password || "";
                 }
             }
         }
