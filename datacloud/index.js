@@ -81,6 +81,7 @@ function getPostInstallScriptPath(jobId) {
 }
 
 function DataCloud(config) {
+    //TODO: stop using home-brew config and use the config module!
     this.config = _.extend(options, config || JSON.parse(fs.readFileSync("./config/python.json")));
 }
 
@@ -92,8 +93,9 @@ function getPostInstallScriptStream(opts) {
     s.push("#!/bin/sh\n");
     _.forEach(opts, function (value, key) {
         var keyStr = key + "=\"" + value.toString() + "\"\n";
-        console.log("Writing post install script property: " + keyStr);
+        //console.log("Writing post install script property: " + keyStr);
         s.push(keyStr); //TODO escape quotations & etc!
+        //TODO: probsbly sdhouldn't write properties whose values are undefined/null
     });
     s.push(null);
 
@@ -131,6 +133,29 @@ DataCloud.prototype.writePostInstallScript = function (jobId, opts, cb) {
 
         if (!opts.cluster_name) opts.cluster_name = jobId;
         if (!opts.output_data_container) opts.output_data_container = opts.input_data_container + "-out";
+
+        if(opts.owner_email) {
+            var smtpConfig = this.config.smtp;
+            if(! smtpConfig.host){
+                console.error("Cannot send emails, no smtp host configured");
+            } else {
+                envVars["OS_OWNER_EMAIL"] = opts.owner_email;
+                envVars["OS_SMTP_HOST"] = smtpConfig.host;
+                if(smtpConfig.SSL) {
+                    envVars["OS_SMTP_USE_SSL"] = smtpConfig.SSL;
+                }
+                if(smtpConfig.TLS) {
+                    envVars["OS_SMTP_USE_TLS"] = smtpConfig.TLS;
+                }
+                if(smtpConfig.username) {
+                    envVars["OS_SMTP_USERNAME"] = smtpConfig.username;
+                    envVars["OS_SMTP_PASSWORD"] = smtpConfig.password || "";
+                }
+            }
+        }
+
+        delete opts.owner_email;
+
 
         var callBackOnce = _.once(cb);
         dest.on("error", function(err){
