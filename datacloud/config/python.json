@@ -1,9 +1,0 @@
-{
-    "pythonPath": "",
-    "smtp": {
-        "host": "smtp.mailgun.org:465",
-        "username": "postmaster@iatest.mailgun.org",
-        "password": "7j7hmdd9q4p5",
-        "SSL": true
-    }
-}

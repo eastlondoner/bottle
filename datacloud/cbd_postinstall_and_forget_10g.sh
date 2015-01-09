@@ -140,10 +140,16 @@ import smtplib
 from email.mime.text import MIMEText
 
 def send_email_notification(email_address, jobname):
+    print("sending email")
     #get email config
-    if "OS_EMAIL_USE_TLS" in os.environ:
+    use_tls = None
+    use_ssl = None
+    smtp_username = None
+    smtp_password = ''
+
+    if "OS_SMTP_USE_TLS" in os.environ:
         use_tls = os.environ['OS_SMTP_USE_TLS']
-    if "OS_EMAIL_USE_SSL" in os.environ:
+    if "OS_SMTP_USE_SSL" in os.environ:
         use_ssl = os.environ['OS_SMTP_USE_SSL']
     if "OS_SMTP_USERNAME" in os.environ:
         smtp_username = os.environ['OS_SMTP_USERNAME']
@@ -152,30 +158,33 @@ def send_email_notification(email_address, jobname):
     # Create a text/plain message
     msg = MIMEText("Hadoop batch job complete: " + str(jobname))
 
-    # me == the sender's email address
-    # you == the recipient's email address
+    me = 'andrew@geneix.com'
     msg['Subject'] = 'Hadoop Job'
-    msg['From'] = 'andrew@geneix.com'
+    msg['From'] = me
     msg['To'] = str(email_address)
 
-    if(use_ssl):
+    if use_ssl:
+        print("using ssl")
         s = smtplib.SMTP_SSL(smtp_host)
     else:
         s = smtplib.SMTP(smtp_host)
     try:
         # identify ourselves to smtp
+        print("insecure ehlo")
         s.ehlo()
 
-        if(use_tls):
+        if use_tls :
+            print("using tls")
             # secure our email with tls encryption
             s.starttls()
             # re-identify ourselves as an encrypted connection
+            print("secure ehlo")
             s.ehlo()
 
-        if(smtp_username):
+        if smtp_username :
             s.login(smtp_username, smtp_password)
 
-        s.sendmail(me, [you], msg.as_string())
+        s.sendmail(me, email_address , msg.as_string())
     finally:
         s.quit()
 
@@ -229,6 +238,8 @@ if __name__ == '__main__':
             else :
                 print("OS_SMTP_HOST environment variable is required if OS_OWNER_EMAIL is given")
                 sys.exit(1)
+        else:
+            owner_email_address = None
 
     except Exception, e:
         print(e)
@@ -259,8 +270,12 @@ if __name__ == '__main__':
         print(e)
         sys.exit(1)
 
-    if owner_email_address:
-        send_email_notification(owner_email_address ,cluster_name)
+    try:
+        if owner_email_address:
+            send_email_notification(owner_email_address ,cluster_name)
+    except Exception, e:
+        print(e)
+        sys.exit(1)
 
     # delete cluster
     print("Deleting cluster...")

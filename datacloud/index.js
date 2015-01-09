@@ -92,7 +92,12 @@ function getPostInstallScriptStream(opts) {
 
     s.push("#!/bin/sh\n");
     _.forEach(opts, function (value, key) {
-        var keyStr = key + "=\"" + value.toString() + "\"\n";
+        var variableInit;
+        if(key.indexOf("OS_") == 0){
+            variableInit = export key + "=\"" + value.toString() + "\"\n";
+        } else {
+            variableInit = key + "=\"" + value.toString() + "\"\n";
+        }
         //console.log("Writing post install script property: " + keyStr);
         s.push(keyStr); //TODO escape quotations & etc!
         //TODO: probsbly sdhouldn't write properties whose values are undefined/null
